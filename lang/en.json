@@ -1,0 +1,5 @@
+{
+    "LIMITS.ConfigureLimits": "Configure Limits",
+    "LIMITS.LimitsLabel": "Limits",
+    "LIMITS.LimitsHint": "Configure the maximum range of light, sight, and sound."
+}
