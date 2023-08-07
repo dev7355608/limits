@@ -4,22 +4,12 @@ import { Extension } from "../extension.mjs";
 export class TemplateExtension extends Extension {
     /** @override */
     registerHooks() {
-        Hooks.on("canvasReady", () => {
-            for (const object of canvas.templates.placeables) {
-                if (object.isPreview) {
-                    continue;
-                }
-
-                this.updateVolume(object.document);
-            }
-        });
-
-        Hooks.on("createMeasuredTemplate", (document) => {
-            if (!document.rendered) {
+        Hooks.on("drawMeasuredTemplate", (object) => {
+            if (object.isPreview) {
                 return;
             }
 
-            this.updateVolume(document);
+            this.updateVolume(object.document);
         });
 
         Hooks.on("updateMeasuredTemplate", (document) => {
@@ -30,16 +20,20 @@ export class TemplateExtension extends Extension {
             this.updateVolume(document);
         });
 
-        Hooks.on("deleteMeasuredTemplate", (document) => {
-            this.updateVolume(document, true);
-        });
-
         Hooks.on("refreshMeasuredTemplate", (object, flags) => {
             if (object.isPreview || !flags.refreshShape) {
                 return;
             }
 
             this.updateVolume(object.document);
+        });
+
+        Hooks.on("destroyMeasuredTemplate", (object) => {
+            if (object.isPreview) {
+                return;
+            }
+
+            this.updateVolume(object.document, true);
         });
 
         Hooks.on("renderMeasuredTemplateConfig", (sheet) => {
@@ -107,11 +101,7 @@ export class TemplateExtension extends Extension {
             mode: 4,
             boundaries: base ? [{
                 type: "cylinder",
-                data: {
-                    base: [base],
-                    bottom: null,
-                    top: null
-                }
+                data: { base: [base] }
             }] : []
         });
     }

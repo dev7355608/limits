@@ -3,22 +3,12 @@ import { Extension } from "../extension.mjs";
 export class DrawingExtension extends Extension {
     /** @override */
     registerHooks() {
-        Hooks.on("canvasReady", () => {
-            for (const object of canvas.drawings.placeables) {
-                if (object.isPreview) {
-                    continue;
-                }
-
-                this.updateVolume(object.document);
-            }
-        });
-
-        Hooks.on("createDrawing", (document) => {
-            if (!document.rendered) {
+        Hooks.on("drawDrawing", (object) => {
+            if (object.isPreview) {
                 return;
             }
 
-            this.updateVolume(document);
+            this.updateVolume(object.document);
         });
 
         Hooks.on("updateDrawing", (document) => {
@@ -29,11 +19,19 @@ export class DrawingExtension extends Extension {
             this.updateVolume(document);
         });
 
-        Hooks.on("deleteDrawing", (document) => {
-            this.updateVolume(document, true);
+        Hooks.on("destroyDrawing", (object) => {
+            if (object.isPreview) {
+                return;
+            }
+
+            this.updateVolume(object.document, true);
         });
 
         Hooks.on("renderDrawingConfig", (sheet) => {
+            if (sheet.options.configureDefault) {
+                return;
+            }
+
             this.injectConfig(sheet, [`.tab[data-tab="position"]`], "beforeend");
         });
     }
@@ -52,8 +50,7 @@ export class DrawingExtension extends Extension {
                         rotation: document.rotation,
                         shape: document.shape,
                         bezierFactor: document.bezierFactor,
-                    }],
-                    bottom: document.elevation * document.parent.dimensions.distancePixels
+                    }]
                 }
             }]
         });

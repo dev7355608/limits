@@ -34,7 +34,7 @@ Hooks.once("libWrapper.Ready", () => {
             function (wrapped, ...args) {
                 return Constraint.apply(
                     wrapped(...args),
-                    `sight.${this.visionMode.detectionMode?.id ?? DetectionMode.BASIC_MODE_ID}`,
+                    `sight.${this.detectionMode?.id ?? DetectionMode.BASIC_MODE_ID}`,
                     { scalingFactor: 100 }
                 );
             },

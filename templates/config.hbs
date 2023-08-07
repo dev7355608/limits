@@ -1,4 +1,4 @@
-<form autocomplete="off" class="flexcol">
+<form autocomplete="off" class="flexcol limits--form">
     <fieldset>
         <legend>{{localize "Sight"}}</legend>
         <div class="detection-modes {{classPrefix}}--detection-modes">
@@ -39,27 +39,31 @@
         </div>
     </fieldset>
 
-    <div class="form-group slim">
-        <label>{{localize "Light"}}</label>
-        <div class="form-fields">
-            <label>{{localize "TOKEN.DetectionEnabled"}}</label>
-            <input type="checkbox" name="light.enabled" {{checked light.enabled}}>
-            <label>{{localize "TOKEN.DetectionRange"}} <span class="units">({{gridUnits}})</span></label>
-            <input name="light.range" type="number" value="{{light.range}}" min="0" step="0.01" placeholder="&#xF534;"
-                class="{{classPrefix}}--range">
+    <fieldset>
+        <legend>{{localize "Light"}}</legend>
+        <div class="form-group slim">
+            <div class="form-fields">
+                <label>{{localize "TOKEN.DetectionEnabled"}}</label>
+                <input type="checkbox" name="light.enabled" {{checked light.enabled}}>
+                <label>{{localize "TOKEN.DetectionRange"}} <span class="units">({{gridUnits}})</span></label>
+                <input name="light.range" type="number" value="{{light.range}}" min="0" step="0.01"
+                    placeholder="&#xF534;" class="{{classPrefix}}--range">
+            </div>
         </div>
-    </div>
+    </fieldset>
 
-    <div class="form-group slim">
-        <label>{{localize "Sound"}}</label>
-        <div class="form-fields">
-            <label>{{localize "TOKEN.DetectionEnabled"}}</label>
-            <input type="checkbox" name="sound.enabled" {{checked sound.enabled}}>
-            <label>{{localize "TOKEN.DetectionRange"}} <span class="units">({{gridUnits}})</span></label>
-            <input name="sound.range" type="number" value="{{sound.range}}" min="0" step="0.01" placeholder="&#xF534;"
-                class="{{classPrefix}}--range">
+    <fieldset>
+        <legend>{{localize "Sound"}}</legend>
+        <div class="form-group slim">
+            <div class="form-fields">
+                <label>{{localize "TOKEN.DetectionEnabled"}}</label>
+                <input type="checkbox" name="sound.enabled" {{checked sound.enabled}}>
+                <label>{{localize "TOKEN.DetectionRange"}} <span class="units">({{gridUnits}})</span></label>
+                <input name="sound.range" type="number" value="{{sound.range}}" min="0" step="0.01"
+                    placeholder="&#xF534;" class="{{classPrefix}}--range">
+            </div>
         </div>
-    </div>
+    </fieldset>
 
     <footer class="sheet-footer">
         <button type="reset">

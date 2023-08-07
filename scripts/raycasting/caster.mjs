@@ -83,37 +83,37 @@ export class Caster {
          * @type {number}
          * @readonly
          */
-        this.minX = minX ??= -Infinity;
+        this.minX = minX = Math.floor((minX ?? -Infinity) * 256) / 256;
         /**
          * The minimum y-coordinate.
          * @type {number}
          * @readonly
          */
-        this.minY = minY ??= -Infinity;
+        this.minY = minY = Math.floor((minY ?? -Infinity) * 256) / 256;
         /**
          * The minimum z-coordinate.
          * @type {number}
          * @readonly
          */
-        this.minZ = minZ ??= -Infinity;
+        this.minZ = minZ = Math.floor((minZ ?? -Infinity) * 256) / 256;
         /**
          * The maximum x-coordinate.
          * @type {number}
          * @readonly
          */
-        this.maxX = maxX ??= +Infinity;
+        this.maxX = maxX = Math.ceil((maxX ?? +Infinity) * 256) / 256;
         /**
          * The maximum y-coordinate.
          * @type {number}
          * @readonly
          */
-        this.maxY = maxY ??= +Infinity;
+        this.maxY = maxY = Math.ceil((maxY ?? +Infinity) * 256) / 256;
         /**
          * The maximum z-coordinate.
          * @type {number}
          * @readonly
          */
-        this.maxZ = maxZ ??= +Infinity;
+        this.maxZ = maxZ = Math.ceil((maxZ ?? +Infinity) * 256) / 256;
         /**
          * The volumes.
          * @type {Volume[]}
@@ -159,17 +159,20 @@ export class Caster {
      * @returns {Volume[]}
      */
     static #initializeVolumes(volumes, minX, minY, minZ, maxX, maxY, maxZ) {
-         // TODO
-        for (let volumeIndex = volumes.length - 1; volumeIndex >= 0; volumeIndex--) {
+        const numVolumes = volumes.length;
+        let numDiscardedVolumes = 0;
+
+        for (let volumeIndex = 0; volumeIndex < numVolumes; volumeIndex++) {
             const volume = volumes[volumeIndex];
 
             if (!volume.initialize(minX, minY, minZ, maxX, maxY, maxZ)) {
-                volumes[volumeIndex] = volumes[volumes.length - 1];
-                volumes.length--;
+                volumes[volumeIndex] = null;
+                numDiscardedVolumes++;
             }
         }
 
-        volumes.sort((v1, v2) => v1.priority - v2.priority);
+        volumes.sort((v1, v2) => !v1 - !v2 || (v1 ? v1.priority - v2.priority : 0));
+        volumes.length -= numDiscardedVolumes;
 
         for (let volumeIndex = volumes.length - 1; volumeIndex >= 0; volumeIndex--) {
             const volume = volumes[volumeIndex];
@@ -299,53 +302,22 @@ export class Caster {
      * @returns {this}
      */
     setTarget(targetX, targetY, targetZ) {
-        this.targetX = targetX;
-        this.targetY = targetY;
-        this.targetZ = targetZ;
+        this.targetX = Math.round(targetX * 256) / 256;
+        this.targetY = Math.round(targetY * 256) / 256;
+        this.targetZ = Math.round(targetZ * 256) / 256;
 
         return this;
     }
-
-    /** @type {number} */
-    #originX = 0;
-
-    /** @type {number} */
-    #originY = 0;
-
-    /** @type {number} */
-    #originZ = 0;
-
-    /** @type {number} */
-    #velocityX = 0;
-
-    /** @type {number} */
-    #velocityY = 0;
-
-    /** @type {number} */
-    #velocityZ = 0;
-
-    /** @type {number} */
-    #targetDistance = 0;
 
     /**
      * Cast a ray from the origin to the target point.
      * @returns {this}
      */
     castRay() {
-        const originX = this.#originX = this.originX;
-        const originY = this.#originY = this.originY;
-        const originZ = this.#originZ = this.originZ;
-        const targetX = this.targetX;
-        const targetY = this.targetY;
-        const targetZ = this.targetZ;
-        const velocityX = this.#velocityX = Math.trunc((targetX - originX) * 256) / 256;
-        const velocityY = this.#velocityY = Math.trunc((targetY - originY) * 256) / 256;
-        const velocityZ = this.#velocityZ = Math.trunc((targetZ - originZ) * 256) / 256;
-
-        this.#targetDistance = Math.sqrt(
-            velocityX * velocityX +
-            velocityY * velocityY +
-            velocityZ * velocityZ
+        this.targetDistance = Math.hypot(
+            this.velocityX = this.targetX - this.originX,
+            this.velocityY = this.targetY - this.originY,
+            this.velocityZ = this.targetZ - this.originZ
         );
 
         this.#targetHit = undefined;
@@ -365,9 +337,9 @@ export class Caster {
      * @param {boolean} computeRemainingEnergy - Compute the remaining energy of the ray.
      */
     #castRay(computeElapsedTime, computeRemainingEnergy) {
-        const targetDistance = this.#targetDistance;
+        const targetDistance = this.targetDistance;
 
-        if (targetDistance <= this.minD) {
+        if (targetDistance < this.minD + 0.5 / 256) {
             this.#targetHit = true;
             this.#elapsedTime = 1;
             this.#distanceTravelled = targetDistance;
@@ -383,7 +355,7 @@ export class Caster {
             }
         }
 
-        if (!computeElapsedTime && targetDistance > this.maxD) {
+        if (!computeElapsedTime && targetDistance > this.maxD + 0.5 / 256) {
             this.#targetHit = false;
             this.#remainingEnergy = 0;
 
@@ -392,12 +364,12 @@ export class Caster {
 
         this.#initializeHits(targetDistance);
 
-        const originX = this.#originX;
-        const originY = this.#originY;
-        const originZ = this.#originZ;
-        const velocityX = this.#velocityX;
-        const velocityY = this.#velocityY;
-        const velocityZ = this.#velocityZ;
+        const originX = this.originX;
+        const originY = this.originY;
+        const originZ = this.originZ;
+        const velocityX = this.velocityX;
+        const velocityY = this.velocityY;
+        const velocityZ = this.velocityZ;
 
         this.#computeHits(originX, originY, originZ, velocityX, velocityY, velocityZ);
         this.#heapifyHits();
@@ -465,7 +437,7 @@ export class Caster {
             currentTime = 1;
         }
 
-        if (currentTime * targetDistance > targetDistance - 0.5 / 256) { // TODO
+        if (currentTime * targetDistance > targetDistance - 0.5 / 256) {
             currentTime = 1;
         }
 
@@ -473,6 +445,35 @@ export class Caster {
         this.#elapsedTime = currentTime;
         this.#remainingEnergy = min(remainingEnergy * targetDistance, 1);
     }
+
+    /**
+     * The x-coordinate of the velocity of the ray.
+     * @type {number}
+     * @readonly
+     */
+    velocityX = 0;
+
+    /**
+     * The y-coordinate of the velocity of the ray.
+     * @type {number}
+     * @readonly
+     */
+    velocityY = 0;
+
+    /**
+     * The z-coordinate of the velocity of the ray.
+     * @type {number}
+     * @readonly
+     */
+    velocityZ = 0;
+
+    /**
+     * The distance from the origin to the target.
+     * @type {number}
+     * @readonly
+     */
+    targetDistance = 0;
+
 
     /** @type {boolean|undefined} */
     #targetHit;
@@ -515,11 +516,7 @@ export class Caster {
      * @readonly
      */
     get distanceTravelled() {
-        return this.#distanceTravelled ??= this.elapsedTime * Math.hypot(
-            this.targetX - this.originX,
-            this.targetY - this.originY,
-            this.targetZ - this.originZ
-        );
+        return this.#distanceTravelled ??= this.targetDistance * this.elapsedTime;
     }
 
     /** @type {number|undefined} */
@@ -539,20 +536,11 @@ export class Caster {
     }
 
     #computeDestination() {
-        const originX = this.originX;
-        const originY = this.originY;
-        const originZ = this.originZ;
-        const targetX = this.targetX;
-        const targetY = this.targetY;
-        const targetZ = this.targetZ;
-        const velocityX = targetX - originX;
-        const velocityY = targetY - originY;
-        const velocityZ = targetZ - originZ;
         const elapsedTime = this.elapsedTime;
 
-        this.#destinationX = originX + velocityX * elapsedTime;
-        this.#destinationY = originY + velocityY * elapsedTime;
-        this.#destinationZ = originZ + velocityZ * elapsedTime;
+        this.#destinationX = this.originX + this.velocityX * elapsedTime;
+        this.#destinationY = this.originY + this.velocityY * elapsedTime;
+        this.#destinationZ = this.originZ + this.velocityZ * elapsedTime;
     }
 
     /** @type {number|undefined} */

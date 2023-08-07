@@ -5,11 +5,30 @@
 
 # Limits (Foundry VTT Module)
 
-Light, sight, and sound restrictions.
+This module allows you to define the maximum range of light, sight, and sound within the scene, drawings, templates, and tiles.
 
-## Installation
+![config](images/config.png)
 
-Manual installation:
-```
-https://github.com/dev7355608/limits/releases/latest/download/module.json
+```js
+token.document.setFlag("limits", {
+  light: {
+    enabled: true,
+    range: 0,
+  },
+  sight: {
+    basicSight: {
+      enabled: true,
+      range: 0,
+    },
+    seeAll: {
+      enabled: true,
+      range: 30,
+    },
+    // ...
+  },
+  sound: {
+    enabled: false,
+    range: null, // Infinity
+  },
+});
 ```

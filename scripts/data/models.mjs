@@ -9,6 +9,7 @@ export class FigureData extends foundry.abstract.DataModel {
         schema.y = new foundry.data.fields.NumberField({ required: true, nullable: false, initial: 0 });
         schema.rotation = new foundry.data.fields.AngleField({ required: true });
         schema.shape = new foundry.data.fields.EmbeddedDataField(foundry.data.ShapeData, { required: true });
+        schema.bezierFactor = new foundry.data.fields.AlphaField({ required: false, initial: 0, max: 0.5 });
         schema.texture = new foundry.data.TextureData({ required: true });
         schema.mask = new BitmaskField({ required: true, initial: -1 });
 

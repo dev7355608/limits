@@ -38,7 +38,7 @@ export class LimitsConfig extends DocumentSheet {
            <div class="form-group">
                 <label>${game.i18n.localize("LIMITS.LimitsLabel")}</label>
                 <div class="form-fields">
-                    <button type="button" name="flags.${MODULE_ID}" class="${MODULE_ID}--button">
+                    <button type="button" name="flags.${MODULE_ID}" class="${MODULE_ID}--button" ${sheet.object.id ? "" : "disabled"}>
                         <i class="fas fa-eye"></i>
                         ${game.i18n.localize("LIMITS.ConfigureLimits")}
                     </button>

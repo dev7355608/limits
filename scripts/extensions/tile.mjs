@@ -3,22 +3,12 @@ import { Extension } from "../extension.mjs";
 export class TileExtension extends Extension {
     /** @override */
     registerHooks() {
-        Hooks.on("canvasReady", () => {
-            for (const object of canvas.tiles.placeables) {
-                if (object.isPreview) {
-                    continue;
-                }
-
-                this.#updateVolume(object.document);
-            }
-        });
-
-        Hooks.on("createTile", (document) => {
-            if (!document.rendered) {
+        Hooks.on("drawTile", (object) => {
+            if (object.isPreview) {
                 return;
             }
 
-            this.#updateVolume(document);
+            this.updateVolume(object.document);
         });
 
         Hooks.on("updateTile", (document) => {
@@ -29,8 +19,12 @@ export class TileExtension extends Extension {
             this.#updateVolume(document);
         });
 
-        Hooks.on("deleteTile", (document) => {
-            this.#updateVolume(document, true);
+        Hooks.on("destroyTile", (object) => {
+            if (object.isPreview) {
+                return;
+            }
+
+            this.updateVolume(object.document, true);
         });
 
         Hooks.on("renderTileConfig", (sheet) => {
@@ -75,8 +69,7 @@ export class TileExtension extends Extension {
                             offsetX: document.texture.offsetX,
                             offsetY: document.texture.offsetY
                         }
-                    }],
-                    bottom: document.elevation * document.parent.dimensions.distancePixels
+                    }]
                 }
             }]
         });
