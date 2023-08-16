@@ -326,6 +326,9 @@ export class Constraint extends PIXI.Polygon {
                 }
             } else {
                 this.#rayCaster1 = null;
+                this.#addPoint(px0, oy);
+                this.#addPoint(px0, py0);
+                this.#addPoint(ox, py0);
             }
 
             if (px1 < ox && oy < py1) {
@@ -350,6 +353,9 @@ export class Constraint extends PIXI.Polygon {
                 }
             } else {
                 this.#rayCaster2 = null;
+                this.#addPoint(ox, py1);
+                this.#addPoint(px1, py1);
+                this.#addPoint(px1, oy);
             }
 
             if (px2 < ox && py2 < oy) {
@@ -374,6 +380,9 @@ export class Constraint extends PIXI.Polygon {
                 }
             } else {
                 this.#rayCaster3 = null;
+                this.#addPoint(px2, oy);
+                this.#addPoint(px2, py2);
+                this.#addPoint(ox, py2);
             }
 
             if (ox < px3 && py3 < oy) {
@@ -398,6 +407,9 @@ export class Constraint extends PIXI.Polygon {
                 }
             } else {
                 this.#rayCaster4 = null;
+                this.#addPoint(ox, py3);
+                this.#addPoint(px3, py3);
+                this.#addPoint(px3, oy);
             }
         }
 
