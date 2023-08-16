@@ -41,6 +41,7 @@ export class Constraint extends PIXI.Polygon {
     constructor(polygon, sense) {
         super();
 
+        const origin = polygon.origin;
         const config = polygon.config;
         const source = config.source;
 
@@ -49,9 +50,9 @@ export class Constraint extends PIXI.Polygon {
          * @readonly
          */
         this.origin = {
-            x: source.x,
-            y: source.y,
-            z: source.elevation * canvas.dimensions.distancePixels
+            x: origin.x,
+            y: origin.y,
+            z: source ? source.elevation * canvas.dimensions.distancePixels : 0
         };
         /**
          * @type {number}
@@ -252,28 +253,28 @@ export class Constraint extends PIXI.Polygon {
                     } else {
                         switch (q2) {
                             case 0:
-                                if (x1 !== ox) {
+                                if (x1 !== ox || x2 !== ox) {
                                     px0 = Math.max(px0, x2);
                                     py0 = Math.max(py0, y2);
                                 }
 
                                 break;
                             case 1:
-                                if (y1 !== oy) {
+                                if (y1 !== oy || y2 !== oy) {
                                     px1 = Math.min(px1, x2);
                                     py1 = Math.max(py1, y2);
                                 }
 
                                 break;
                             case 2:
-                                if (x1 !== ox) {
+                                if (x1 !== ox || x2 !== ox) {
                                     px2 = Math.min(px2, x2);
                                     py2 = Math.min(py2, y2);
                                 }
 
                                 break;
                             case 3:
-                                if (y1 !== oy) {
+                                if (y1 !== oy || y2 !== oy) {
                                     px3 = Math.max(px3, x2);
                                     py3 = Math.min(py3, y2);
                                 }
@@ -303,7 +304,7 @@ export class Constraint extends PIXI.Polygon {
             py2 = Math.max(py2, minY);
             py3 = Math.max(py3, minY);
 
-            {
+            if (ox < px0 && oy < py0) {
                 const rayCaster1 = this.#rayCaster1 = rayCaster0.crop(ox, oy, minZ, px0, py0, maxZ);
                 const { minD, maxD } = rayCaster1;
 
@@ -323,9 +324,11 @@ export class Constraint extends PIXI.Polygon {
                     this.#castRays(rayCaster1, px0, oy, px0, py0);
                     this.#castRays(rayCaster1, px0, py0, ox, py0);
                 }
+            } else {
+                this.#rayCaster1 = null;
             }
 
-            {
+            if (px1 < ox && oy < py1) {
                 const rayCaster2 = this.#rayCaster2 = rayCaster0.crop(px1, oy, minZ, ox, py1, maxZ);
                 const { minD, maxD } = rayCaster2;
 
@@ -345,9 +348,11 @@ export class Constraint extends PIXI.Polygon {
                     this.#castRays(rayCaster2, ox, py1, px1, py1);
                     this.#castRays(rayCaster2, px1, py1, px1, oy);
                 }
+            } else {
+                this.#rayCaster2 = null;
             }
 
-            {
+            if (px2 < ox && py2 < oy) {
                 const rayCaster3 = this.#rayCaster3 = rayCaster0.crop(px2, py2, minZ, ox, oy, maxZ);
                 const { minD, maxD } = rayCaster3;
 
@@ -367,9 +372,11 @@ export class Constraint extends PIXI.Polygon {
                     this.#castRays(rayCaster3, px2, oy, px2, py2);
                     this.#castRays(rayCaster3, px2, py2, ox, py2);
                 }
+            } else {
+                this.#rayCaster3 = null;
             }
 
-            {
+            if (ox < px3 && py3 < oy) {
                 const rayCaster4 = this.#rayCaster4 = rayCaster0.crop(ox, py3, minZ, px3, oy, maxZ);
                 const { minD, maxD } = rayCaster4;
 
@@ -389,6 +396,8 @@ export class Constraint extends PIXI.Polygon {
                     this.#castRays(rayCaster4, ox, py3, px3, py3);
                     this.#castRays(rayCaster4, px3, py3, px3, oy);
                 }
+            } else {
+                this.#rayCaster4 = null;
             }
         }
 
