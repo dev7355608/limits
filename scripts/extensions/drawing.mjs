@@ -38,6 +38,14 @@ export class DrawingExtension extends Extension {
 
     /** @override */
     prepareVolumeData(document, data) {
+        let bottom = null;
+        let top = null;
+
+        if (game.modules.get("levels")?.active) {
+            bottom = document.flags.levels?.rangeBottom ?? null;
+            top = document.flags.levels?.rangeTop ?? null;
+        }
+
         data.updateSource({
             hidden: document.hidden,
             mode: 4,
@@ -50,7 +58,9 @@ export class DrawingExtension extends Extension {
                         rotation: document.rotation,
                         shape: document.shape,
                         bezierFactor: document.bezierFactor,
-                    }]
+                    }],
+                    bottom,
+                    top
                 }
             }]
         });

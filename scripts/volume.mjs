@@ -241,8 +241,9 @@ export class Volume {
             return;
         }
 
-        const bottom = cylinderData.bottom ?? -Infinity;
-        const top = cylinderData.top ?? Infinity;
+        const distancePixels = canvas.dimensions.distancePixels;
+        const bottom = (cylinderData.bottom ?? -Infinity) * distancePixels;
+        const top = (cylinderData.top ?? Infinity) * distancePixels;
 
         return new raycasting.boundaries.Cylinder({ base, bottom, top, mask: data.mask });
     }

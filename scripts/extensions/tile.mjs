@@ -46,6 +46,14 @@ export class TileExtension extends Extension {
 
     /** @override */
     prepareVolumeData(document, data) {
+        let bottom = null;
+        let top = null;
+
+        if (document.overhead && game.modules.get("levels")?.active) {
+            bottom = document.flags.levels?.rangeBottom ?? null;
+            top = document.flags.levels?.rangeTop ?? null;
+        }
+
         data.updateSource({
             hidden: document.hidden,
             mode: 4,
@@ -69,7 +77,9 @@ export class TileExtension extends Extension {
                             offsetX: document.texture.offsetX,
                             offsetY: document.texture.offsetY
                         }
-                    }]
+                    }],
+                    bottom,
+                    top
                 }
             }]
         });
