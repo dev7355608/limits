@@ -1,0 +1,20 @@
+{
+    "include": [
+        "scripts/**/*.mjs"
+    ],
+    "compilerOptions": {
+        "strict": true,
+        "allowJs": true,
+        "checkJs": false,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "lib": [
+            "ES2023"
+        ],
+        "module": "esnext",
+        "target": "esnext",
+        "outDir": "_types",
+        "noUnusedLocals": false,
+        "noUnusedParameters": false
+    }
+}

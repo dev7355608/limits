@@ -1,5 +1,53 @@
 {
-    "LIMITS.ConfigureLimits": "Configure Limits",
-    "LIMITS.LimitsLabel": "Limits",
-    "LIMITS.LimitsHint": "Configure the maximum range of light, sight, and sound."
+    "LIMITS": {
+        "label": "Limit Range",
+        "FIELDS": {
+            "sight": {
+                "label": "Sight",
+                "hint": "Configure the detection modes that this limit applies to."
+            },
+            "light": {
+                "label": "Light",
+                "hint": "Configure whether this limit applies to light sources."
+            },
+            "darkness": {
+                "label": "Darkness",
+                "hint": "Configure whether this limit applies to darkness sources."
+            },
+            "sound": {
+                "label": "Sound",
+                "hint": "Configure whether this limit applies to sound sources."
+            },
+            "range": {
+                "label": "Range",
+                "hint": "Configure the range of this limit."
+            },
+            "mode": {
+                "label": "Mode",
+                "hint": "Configure how the range of this limit affects the effective range."
+            },
+            "priority": {
+                "label": "Priority",
+                "hint": "Configure the order in which limits are applied to determine the effective range."
+            }
+        },
+        "MODES": {
+            "STACK": {
+                "label": "Stack",
+                "hint": "The effective range is reduced further by this limit."
+            },
+            "UPGRADE": {
+                "label": "Upgrade",
+                "hint": "The effective range is increased to the range of this limit."
+            },
+            "DOWNGRADE": {
+                "label": "Downgrade",
+                "hint": "The effective range is decreased to the range of this limit."
+            },
+            "OVERRIDE": {
+                "label": "Override",
+                "hint": "The effective range is overridden by the range of this limit."
+            }
+        }
+    }
 }

@@ -1,0 +1,36 @@
+{
+    "name": "limits",
+    "description": "Limits (Foundry VTT Module)",
+    "author": {
+        "name": "dev7355608",
+        "email": "dev7355608@gmail.com",
+        "url": "https://github.com/dev7355608"
+    },
+    "license": "MIT",
+    "homepage": "https://github.com/dev7355608/limits",
+    "bugs": {
+        "url": "https://github.com/dev7355608/limits/issues",
+        "email": "dev7355608@gmail.com"
+    },
+    "private": true,
+    "scripts": {
+        "build": "rimraf module.zip script.js script.js.map && rollup -c",
+        "clean": "rimraf _docs _types module.zip script.js script.js.map",
+        "docs": "rimraf _docs && typedoc",
+        "lint": "eslint",
+        "lint:fix": "eslint --fix",
+        "types": "rimraf _types && tsc",
+        "watch": "rollup -c -w --environment BUILD:development"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.12.0",
+        "@rollup/plugin-terser": "^0.4.4",
+        "@stylistic/eslint-plugin": "^2.9.0",
+        "archiver": "^7.0.1",
+        "eslint": "^9.12.0",
+        "globals": "^15.11.0",
+        "rimraf": "^6.0.1",
+        "rollup": "^4.24.0",
+        "typedoc": "^0.26.9"
+    }
+}

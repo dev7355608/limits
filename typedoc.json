@@ -1,0 +1,9 @@
+{
+    "name": "Limits (Foundry VTT Module)",
+    "entryPoints": [
+        "scripts/_module.mjs"
+    ],
+    "out": "_docs",
+    "disableSources": true,
+    "excludeExternals": true
+}
