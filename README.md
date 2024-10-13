@@ -7,4 +7,4 @@
 
 This module allows you to limit the range of sight, light, darkness, and sound within regions.
 
-<img src="images/demo.png" style="max-height: 560px"> <img src="images/config.png" style="max-height: 560px">
+<img src="images/demo.png" height="500px"> <img src="images/config.png" height="500px">
