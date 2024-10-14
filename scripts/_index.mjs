@@ -1,12 +1,13 @@
+import LimitRangeRegionBehaviorConfig from "./apps/region-behavior.mjs";
 import { PointDarknessSourceMixin, PointLightSourceMixin, PointSoundSourceMixin, PointVisionSourceMixin } from "./canvas/sources/_module.mjs";
 import LimitRangeRegionBehaviorType from "./data/region-behavior.mjs";
 
-Hooks.once("init", () => {
-    const type = "limits.limitRange";
+const TYPE = "limits.limitRange";
 
-    CONFIG.RegionBehavior.dataModels[type] = LimitRangeRegionBehaviorType;
-    CONFIG.RegionBehavior.typeIcons[type] = "fa-solid fa-eye-low-vision";
-    CONFIG.RegionBehavior.typeLabels[type] = "LIMITS.label";
+Hooks.once("init", () => {
+    CONFIG.RegionBehavior.dataModels[TYPE] = LimitRangeRegionBehaviorType;
+    CONFIG.RegionBehavior.typeIcons[TYPE] = "fa-solid fa-eye-low-vision";
+    CONFIG.RegionBehavior.typeLabels[TYPE] = "LIMITS.label";
 
     Hooks.once("setup", () => {
         Hooks.once("canvasInit", () => {
@@ -36,4 +37,8 @@ Hooks.once("init", () => {
             }
         });
     });
+});
+
+Hooks.once("ready", () => {
+    CONFIG.RegionBehavior.sheetClasses[TYPE]["core.RegionBehaviorConfig"].cls = LimitRangeRegionBehaviorConfig;
 });
