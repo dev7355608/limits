@@ -1,0 +1,53 @@
+{
+    "LIMITS": {
+        "label": "Alcance Limite",
+        "FIELDS": {
+            "sight": {
+                "label": "Visão",
+                "hint": "Configura os modos de detecção que este limite se aplica."
+            },
+            "light": {
+                "label": "Luz",
+                "hint": "Configura se este limite se aplica às fontes de luz."
+            },
+            "darkness": {
+                "label": "Escuridão",
+                "hint": "Configura se este limite se aplica às fontes de escuridão."
+            },
+            "sound": {
+                "label": "Som",
+                "hint": "Configura se este limite se aplica às fontes de som."
+            },
+            "range": {
+                "label": "Alcance",
+                "hint": "Configura o alcance deste limite."
+            },
+            "mode": {
+                "label": "Modo",
+                "hint": "Configura como o alcance deste limite afeta o alcance efetivo."
+            },
+            "priority": {
+                "label": "Prioridade",
+                "hint": "Configura a ordem em que os limites são aplicados para determinar o alcance efetivo."
+            }
+        },
+        "MODES": {
+            "STACK": {
+                "label": "Pilha",
+                "hint": "O alcance efetivo é reduzido ainda mais por este limite."
+            },
+            "UPGRADE": {
+                "label": "Melhorar",
+                "hint": "O alcance efetivo é aumentado até o alcance deste limite."
+            },
+            "DOWNGRADE": {
+                "label": "Piorar",
+                "hint": "O alcance efetivo é diminuído até o alcance deste limite."
+            },
+            "OVERRIDE": {
+                "label": "Substituir",
+                "hint": "O alcance efetivo é substituído pelo alcance deste limite."
+            }
+        }
+    }
+}
