@@ -1,0 +1,53 @@
+{
+    "LIMITS": {
+        "label": "Reichweite beschränken",
+        "FIELDS": {
+            "sight": {
+                "label": "Sicht",
+                "hint": "Lege fest, für welche Entdeckungsmodi diese Beschränkung gilt."
+            },
+            "light": {
+                "label": "Licht",
+                "hint": "Lege fest, ob diese Beschränkung für Lichtquellen gilt."
+            },
+            "darkness": {
+                "label": "Dunkelheit",
+                "hint": "Lege fest, ob diese Beschränkung für Dunkelheitsquellen gilt."
+            },
+            "sound": {
+                "label": "Geräusche",
+                "hint": "Lege fest, ob diese Beschränkung für Geräuschquellen gilt."
+            },
+            "range": {
+                "label": "Reichweite",
+                "hint": "Lege die Reichweite dieser Beschränkung fest."
+            },
+            "mode": {
+                "label": "Modus",
+                "hint": "Lege fest, wie sich die Reichweite dieser Beschränkung auf die effektive Reichweite auswirkt."
+            },
+            "priority": {
+                "label": "Priorität",
+                "hint": "Lege die Reihenfolge fest, in der die Beschränkungen bei der Bestimmung der effektive Reichweite angewendet werden."
+            }
+        },
+        "MODES": {
+            "STACK": {
+                "label": "Vereinigen",
+                "hint": "Die effektive Reichweite wird durch diese Beschränkung weiter reduziert."
+            },
+            "UPGRADE": {
+                "label": "Erhöhen",
+                "hint": "Die effektive Reichweite wird auf die Reichweite dieser Beschränkung angehoben."
+            },
+            "DOWNGRADE": {
+                "label": "Verringern",
+                "hint": "Die effektive Reichweite wird auf die Reichweite dieser Beschränkung abgesenkt."
+            },
+            "OVERRIDE": {
+                "label": "Überschreiben",
+                "hint": "Die effektive Reichweite wird durch die Reichweite dieser Beschränkung ersetzt."
+            }
+        }
+    }
+}
