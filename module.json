@@ -29,6 +29,11 @@
             "lang": "en",
             "name": "English",
             "path": "lang/en.json"
+        },
+        {
+            "lang": "pt-BR",
+            "name": "Portuguese (Brazil)",
+            "path": "lang/pt-BR.json"
         }
     ],
     "url": "https://github.com/dev7355608/limits",
