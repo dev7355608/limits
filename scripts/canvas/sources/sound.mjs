@@ -19,12 +19,29 @@ export const PointSoundSourceMixin = (PointSoundSource) => class extends PointSo
 
         PointSourcePolygonConstraint.apply(this.shape, Limits.sound);
 
-        const { x, y, elevation } = this.data;
+        const { x, y, elevation, radius } = this.data;
         const z = elevation * canvas.dimensions.distancePixels;
         const { left: minX, right: maxX, top: minY, bottom: maxY } = this.shape.bounds;
-        const space = Limits.sound.crop(minX, minY, z, maxX, maxY, z);
+
+        let minZ;
+        let maxZ;
+
+        if (game.release.version >= 13) {
+            minZ = z - radius;
+            maxZ = z + radius;
+        } else {
+            minZ = z;
+            maxZ = z;
+        }
+
+        const space = Limits.sound.crop(minX, minY, minZ, maxX, maxY, maxZ);
 
         this.#caster.initialize(space, x, y, z, 0.0, Infinity);
+    }
+
+    /** @override */
+    testPoint(point) {
+        return super.testPoint(point) && this.#caster.castRay(point.x, point.y, point.elevation * canvas.dimensions.distancePixels).targetHit;
     }
 
     /** @override */
@@ -32,7 +49,15 @@ export const PointSoundSourceMixin = (PointSoundSource) => class extends PointSo
         let volume = super.getVolumeMultiplier(listener, options);
 
         if (volume > 0.0) {
-            volume *= this.#caster.castRay(listener.x, listener.y, this.#caster.ray.originZ).remainingEnergy;
+            let z;
+
+            if (game.release.version >= 13) {
+                z = listener.elevation * canvas.dimensions.distancePixels;
+            } else {
+                z = this.#caster.ray.originZ;
+            }
+
+            volume *= this.#caster.castRay(listener.x, listener.y, z).remainingEnergy;
         }
 
         return volume;

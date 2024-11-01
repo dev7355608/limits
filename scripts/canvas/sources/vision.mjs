@@ -26,44 +26,75 @@ export const PointVisionSourceMixin = (PointVisionSource) => class extends Point
         }
     }
 
+    /** @override */
+    testPoint(point) {
+        return super.testPoint(point) && this.#getCaster().castRay(point.x, point.y, point.elevation * canvas.dimensions.distancePixels).targetHit;
+    }
+
     /**
      * Test whether the ray hits the target.
      * @param {foundry.types.TokenDetectionMode} - The detection mode data.
-     * @param {{ x: number, y: number }} point - The target point.
-     * @param {number} elevation - The target elevation.
+     * @param {foundry.types.ElevatedPoint} point - The target point.
      * @returns {boolean} Does the ray hit the target?
      * @internal
      */
-    _testLimit(mode, point, elevation) {
-        const caster = this.#casters[mode.id];
+    _testLimit(mode, point) {
+        return this.#getCaster(mode).castRay(point.x, point.y, point.elevation * canvas.dimensions.distancePixels).targetHit;
+    }
+
+    /**
+     * Get the ray caster for this source.
+     * @overload
+     * @returns {PointSourceRayCaster} The ray caster.
+     */
+    /**
+     * Get the ray caster for the given detection mode.
+     * @overload
+     * @param {foundry.types.TokenDetectionMode} - The detection mode data.
+     * @returns {PointSourceRayCaster} The ray caster.
+     */
+    #getCaster(mode) {
+        const id = mode ? mode.id : "";
+        const caster = this.#casters[id];
 
         if (!caster.initialized) {
             const { x, y, elevation, externalRadius } = this.data;
             const z = elevation * canvas.dimensions.distancePixels;
-            const radius = this.object.getLightRadius(mode.range);
-            let minX = x - radius;
-            let minY = y - radius;
-            let maxX = x + radius;
-            let maxY = y + radius;
+            const radius = mode ? this.object.getLightRadius(mode.range) : this.data.radius;
             let bounds;
 
-            if (mode.id === "lightPerception") {
+            if (!mode) {
+                bounds = this.shape.bounds;
+            } else if (id === "lightPerception") {
                 bounds = this.los.bounds;
             } else {
                 bounds = this.los.config.useInnerBounds ? canvas.dimensions.sceneRect : canvas.dimensions.rect;
             }
 
-            minX = Math.max(minX, bounds.left);
-            minY = Math.max(minY, bounds.top);
-            maxX = Math.min(maxX, bounds.right);
-            maxY = Math.min(maxY, bounds.bottom);
+            let { left: minX, right: maxX, top: minY, bottom: maxY } = bounds;
 
-            const space = Limits.sight[mode.id].crop(minX, minY, -Infinity, maxX, maxY, Infinity);
+            minX = Math.max(minX, x - radius);
+            minY = Math.max(minY, y - radius);
+            maxX = Math.min(maxX, x + radius);
+            maxY = Math.min(maxY, y + radius);
+
+            let minZ;
+            let maxZ;
+
+            if (game.release.version >= 13) {
+                minZ = z - radius;
+                maxZ = z + radius;
+            } else {
+                minZ = -Infinity;
+                maxZ = Infinity;
+            }
+
+            const space = Limits.sight[id].crop(minX, minY, minZ, maxX, maxY, maxZ);
 
             caster.initialize(space, x, y, z, externalRadius, Infinity);
         }
 
-        return caster.castRay(point.x, point.y, elevation * canvas.dimensions.distancePixels).targetHit;
+        return caster;
     }
 };
 
