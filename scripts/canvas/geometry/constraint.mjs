@@ -52,8 +52,12 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
     constructor(polygon, space) {
         super();
 
-        const { x: originX, y: originY } = this.#origin = polygon.origin;
-        const elevation = polygon.config.source?.elevation ?? 0.0;
+        let { x: originX, y: originY, elevation } = this.#origin = polygon.origin;
+
+        if (game.release.version < 13) {
+            elevation = polygon.config.source?.elevation ?? 0.0;
+        }
+
         const originZ = elevation * canvas.dimensions.distancePixels;
         const externalRadius = this.#externalRadius = polygon.config.externalRadius;
         const { left: minX, right: maxX, top: minY, bottom: maxY } = this.#sourceBounds = polygon.bounds;
@@ -91,7 +95,7 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
         }
     }
 
-    /** @type {{ x: number, y: number }} */
+    /** @type {foundry.types.ElevatedPoint} */
     #origin;
 
     /** @type {number} */

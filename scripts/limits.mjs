@@ -129,14 +129,38 @@ export default class Limits {
                         }
 
                         break;
+                    case "polygon":
+                        shape = raycast.shapes.Polygon.create({ points: data.points });
+
+                        break;
                 }
+            }
+
+            let polygons;
+            let bottom;
+            let top;
+
+            if (game.release.version >= 13) {
+                if (!shape) {
+                    polygons = region.polygons;
+                }
+
+                bottom = region.elevation.bottom;
+                top = region.elevation.top;
+            } else {
+                if (!shape) {
+                    polygons = region.object.polygons;
+                }
+
+                bottom = region.object.bottom;
+                top = region.object.top;
             }
 
             geometry = raycast.Geometry.create({
                 boundaries: [raycast.boundaries.Region.create({
-                    shapes: shape ? [shape] : region.object.polygons.map((polygon) => raycast.shapes.Polygon.create({ points: polygon.points })),
-                    bottom: region.object.bottom * distancePixels - 1e-8,
-                    top: region.object.top * distancePixels + 1e-8,
+                    shapes: shape ? [shape] : polygons.map((polygon) => raycast.shapes.Polygon.create({ points: polygon.points })),
+                    bottom: bottom * distancePixels - 1e-8,
+                    top: top * distancePixels + 1e-8,
                 })],
             });
             this.#geometries.set(region, geometry);
@@ -166,7 +190,7 @@ export default class Limits {
 
     static {
         Hooks.on("updateRegion", (document, changed) => {
-            if (document.object && ("shapes" in changed || "elevation" in changed)) {
+            if (document.rendered && ("shapes" in changed || "elevation" in changed)) {
                 this.#destroyGeometry(document);
             }
         });
