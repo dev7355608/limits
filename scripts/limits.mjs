@@ -140,7 +140,7 @@ export default class Limits {
             let bottom;
             let top;
 
-            if (game.release.version >= 13) {
+            if (game.release.generation >= 13) {
                 if (!shape) {
                     polygons = region.polygons;
                 }

@@ -54,7 +54,7 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
 
         let { x: originX, y: originY, elevation } = this.#origin = polygon.origin;
 
-        if (game.release.version < 13) {
+        if (game.release.generation < 13) {
             elevation = polygon.config.source?.elevation ?? 0.0;
         }
 

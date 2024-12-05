@@ -26,7 +26,7 @@ export const PointSoundSourceMixin = (PointSoundSource) => class extends PointSo
         let minZ;
         let maxZ;
 
-        if (game.release.version >= 13) {
+        if (game.release.generation >= 13) {
             minZ = z - radius;
             maxZ = z + radius;
         } else {
@@ -51,7 +51,7 @@ export const PointSoundSourceMixin = (PointSoundSource) => class extends PointSo
         if (volume > 0.0) {
             let z;
 
-            if (game.release.version >= 13) {
+            if (game.release.generation >= 13) {
                 z = listener.elevation * canvas.dimensions.distancePixels;
             } else {
                 z = this.#caster.ray.originZ;

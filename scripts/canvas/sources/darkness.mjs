@@ -29,7 +29,7 @@ export const PointDarknessSourceMixin = (PointDarknessSource) => class extends P
             PointSourcePolygonConstraint.apply(this.shape, Limits.darkness);
         }
 
-        if (game.release.version >= 13) {
+        if (game.release.generation >= 13) {
             const { x, y, elevation, radius } = this.data;
             const z = elevation * canvas.dimensions.distancePixels;
             const { left: minX, right: maxX, top: minY, bottom: maxY } = this.shape.bounds;

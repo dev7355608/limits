@@ -16,7 +16,7 @@ Hooks.once("init", () => {
             CONFIG.Canvas.darknessSourceClass = PointDarknessSourceMixin(CONFIG.Canvas.darknessSourceClass);
             CONFIG.Canvas.soundSourceClass = PointSoundSourceMixin(CONFIG.Canvas.soundSourceClass);
 
-            if (game.release.version >= 13) {
+            if (game.release.generation >= 13) {
                 if (game.modules.get("lib-wrapper")?.active) {
                     libWrapper.register(
                         "limits",
@@ -83,7 +83,7 @@ Hooks.once("init", () => {
 });
 
 Hooks.once("ready", () => {
-    if (game.release.version < 13) {
+    if (game.release.generation < 13) {
         CONFIG.RegionBehavior.sheetClasses[TYPE]["core.RegionBehaviorConfig"].cls = LimitRangeRegionBehaviorConfig;
     }
 });

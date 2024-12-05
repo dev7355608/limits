@@ -81,7 +81,7 @@ export const PointVisionSourceMixin = (PointVisionSource) => class extends Point
             let minZ;
             let maxZ;
 
-            if (game.release.version >= 13) {
+            if (game.release.generation >= 13) {
                 minZ = z - radius;
                 maxZ = z + radius;
             } else {
