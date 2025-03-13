@@ -33,7 +33,7 @@ export const PointVisionSourceMixin = (PointVisionSource) => class extends Point
 
     /**
      * Test whether the ray hits the target.
-     * @param {foundry.types.TokenDetectionMode} - The detection mode data.
+     * @param {foundry.documents.TokenDetectionMode} - The detection mode data.
      * @param {foundry.types.ElevatedPoint} point - The target point.
      * @returns {boolean} Does the ray hit the target?
      * @internal
@@ -50,7 +50,7 @@ export const PointVisionSourceMixin = (PointVisionSource) => class extends Point
     /**
      * Get the ray caster for the given detection mode.
      * @overload
-     * @param {foundry.types.TokenDetectionMode} - The detection mode data.
+     * @param {foundry.documents.TokenDetectionMode} - The detection mode data.
      * @returns {PointSourceRayCaster} The ray caster.
      */
     #getCaster(mode) {
@@ -60,7 +60,7 @@ export const PointVisionSourceMixin = (PointVisionSource) => class extends Point
         if (!caster.initialized) {
             const { x, y, elevation, externalRadius } = this.data;
             const z = elevation * canvas.dimensions.distancePixels;
-            const radius = mode ? this.object.getLightRadius(mode.range) : this.data.radius;
+            const radius = mode ? this.object.getLightRadius(mode.range ?? /* V12 */ Infinity) : this.data.radius;
             let bounds;
 
             if (!mode) {
