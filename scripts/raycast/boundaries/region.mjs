@@ -5,6 +5,7 @@ import Universe from "./universe.mjs";
 
 /**
  * @import { int32 } from "../_types.mjs";
+ * @import Cast from "../cast.mjs";
  */
 
 /**

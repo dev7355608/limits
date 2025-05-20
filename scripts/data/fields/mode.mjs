@@ -1,5 +1,8 @@
 import { MODES } from "../../const.mjs";
 
+/**
+ * @extends {foundry.data.fields.NumberField}
+ */
 export default class ModeField extends foundry.data.fields.NumberField {
     constructor() {
         super({

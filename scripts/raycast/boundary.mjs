@@ -40,6 +40,7 @@ export default class Boundary {
     /**
      * Is this boundary unbounded w.r.t. to the bounding box of the space?
      * @type {boolean}
+     * @virtual
      */
     get isUnbounded() {
         return false;
@@ -48,7 +49,7 @@ export default class Boundary {
     /**
      * Can this boundary be discarded as it wouldn't affect rays at all?
      * @type {boolean}
-     * @sealed
+     * @virtual
      */
     get isEmpty() {
         return this.mask === 0 || this.state !== 0 && this.isUnbounded;
@@ -63,6 +64,7 @@ export default class Boundary {
      * @param {number} maxY - The maximum y-coordinate.
      * @param {number} maxZ - The maximum z-coordinate.
      * @returns {Boundary} The cropped boundary.
+     * @virtual
      * @abstract
      */
     crop(minX, minY, minZ, maxX, maxY, maxZ) {
@@ -72,6 +74,7 @@ export default class Boundary {
     /**
      * Compute the hits of the boundary with the ray.
      * @param {Cast} cast - The cast.
+     * @virtual
      * @abstract
      */
     computeHits(cast) { }

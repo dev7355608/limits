@@ -3,22 +3,23 @@ import computeQuadrantBounds from "./quadrants.mjs";
 
 /**
  * The constraint for a polygon given a space.
+ * @extends {PIXI.Polygon}
  */
 export default class PointSourcePolygonConstraint extends PIXI.Polygon {
     /**
      * Apply the constraint given by the space to the polygon.
      * @overload
-     * @param {foundry.canvas.geometry.shapes.PointSourcePolygon} polygon - The polygon that is to be constrained.
+     * @param {foundry.canvas.geometry.PointSourcePolygon} polygon - The polygon that is to be constrained.
      * @param {raycast.Space} space - The space.
      * @returns {boolean} Was the polygon constrained?
      */
     /**
      * Apply the constraint given by the space to the polygon.
      * @overload
-     * @param {foundry.canvas.geometry.shapes.PointSourcePolygon} polygon - The polygon that is to be constrained.
+     * @param {foundry.canvas.geometry.PointSourcePolygon} polygon - The polygon that is to be constrained.
      * @param {raycast.Space} space - The space.
      * @param {boolean} clone - Clone before constraining?
-     * @returns {foundry.canvas.geometry.shapes.PointSourcePolygon} The constrained polygon.
+     * @returns {foundry.canvas.geometry.PointSourcePolygon} The constrained polygon.
      */
     static apply(polygon, space, clone) {
         const constraint = new this(polygon, space);
@@ -45,7 +46,7 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
     }
 
     /**
-     * @param {foundry.canvas.geometry.shapes.PointSourcePolygon} polygon - The polygon that the constraint is computed for.
+     * @param {foundry.canvas.geometry.PointSourcePolygon} polygon - The polygon that the constraint is computed for.
      * @param {raycast.Space} space - The space.
      * @protected
      */

@@ -6,6 +6,7 @@ import SightField from "./fields/sight.mjs";
 
 /**
  * The "Limit Range" Region Behavior.
+ * @extends {foundry.data.regionBehaviors.RegionBehaviorType}
  * @sealed
  */
 export default class LimitRangeRegionBehaviorType extends foundry.data.regionBehaviors.RegionBehaviorType {

@@ -1,3 +1,6 @@
+/**
+ * @extends {foundry.data.fields.NumberField}
+ */
 export default class RangeField extends foundry.data.fields.NumberField {
     constructor() {
         super({ required: true, nullable: true, min: 0, step: 0.01 });

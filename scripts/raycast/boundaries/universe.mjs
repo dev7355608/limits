@@ -2,6 +2,7 @@ import Boundary from "../boundary.mjs";
 
 /**
  * @import { int32 } from "../_types.mjs";
+ * @import Cast from "../cast.mjs";
  */
 
 /**

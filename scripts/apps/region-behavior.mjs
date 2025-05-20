@@ -1,5 +1,6 @@
 /**
  * The "Limit Range" Region Behavior Config.
+ * @extends {foundry.applications.sheets.RegionBehaviorConfig}
  * @sealed
  */
 export default class LimitRangeRegionBehaviorConfig extends foundry.applications.sheets.RegionBehaviorConfig {

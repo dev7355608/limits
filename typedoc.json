@@ -5,5 +5,12 @@
     ],
     "out": "_docs",
     "disableSources": true,
-    "excludeExternals": true
+    "excludeExternals": true,
+    "sort": [
+        "kind",
+        "instance-first",
+        "visibility",
+        "enum-member-source-order",
+        "alphabetical"
+    ]
 }

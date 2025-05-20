@@ -1,3 +1,6 @@
+/**
+ * @extends {foundry.data.fields.NumberField}
+ */
 export default class PriorityField extends foundry.data.fields.NumberField {
     constructor() {
         super({

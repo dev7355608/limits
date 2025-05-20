@@ -1,3 +1,6 @@
+/**
+ * @extends {foundry.data.fields.NumberField}
+ */
 export default class SightField extends foundry.data.fields.SetField {
     constructor() {
         super(new foundry.data.fields.StringField({ required: true, nullable: false, blank: false }));

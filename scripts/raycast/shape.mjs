@@ -28,6 +28,7 @@ export default class Shape {
      * @param {number} maxX - The maximum x-coordinate.
      * @param {number} maxY - The maximum y-coordinate.
      * @returns {-1|0|1} If 1, then the bounding box is contained in the shape. If -1, if the bounding box does not intersect with the shape.
+     * @virtual
      */
     testBounds(minX, minY, maxX, maxY) {
         return 0;
@@ -38,6 +39,7 @@ export default class Shape {
      * @param {number} x - The x-coordinate of the point.
      * @param {number} y - The y-coordinate of the point.
      * @returns {boolean} True if the shape contains the point.
+     * @virtual
      * @abstract
      */
     containsPoint(x, y) {
@@ -48,6 +50,7 @@ export default class Shape {
      * Compute the hits of the shape with the ray.
      * This function is called only with nonzero x/y-direction.
      * @param {Cast} cast - The cast.
+     * @virtual
      * @abstract
      */
     computeHits(cast) { }
