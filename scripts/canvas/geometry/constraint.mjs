@@ -53,7 +53,23 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
     constructor(polygon, space) {
         super();
 
-        let { x: originX, y: originY, elevation } = this.#origin = polygon.origin;
+        this.#origin = polygon.origin;
+
+        const object = polygon.config.source?.object;
+
+        if (object instanceof foundry.canvas.placeables.Token) {
+            const center = object.document.getCenterPoint();
+
+            if (Math.abs(this.#origin.x - Math.round(center.x)) <= 1 && Math.abs(this.#origin.y - Math.round(center.y)) <= 1) {
+                if (game.release.generation >= 13) {
+                    center.elevation = this.#origin.elevation;
+                }
+
+                this.#origin = center;
+            }
+        }
+
+        let { x: originX, y: originY, elevation } = this.#origin;
 
         if (game.release.generation < 13) {
             elevation = polygon.config.source?.elevation ?? 0.0;
