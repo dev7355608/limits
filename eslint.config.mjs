@@ -30,6 +30,7 @@ export default [
                 game: "readonly",
                 Hooks: "readonly",
                 PIXI: "readonly",
+                Token: "readonly",
             },
         },
         rules: {

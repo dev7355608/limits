@@ -1,6 +1,9 @@
 import * as raycast from "../../raycast/_module.mjs";
 import computeQuadrantBounds from "./quadrants.mjs";
 
+/** @type {typeof foundry.canvas.placeables.Token} */
+const Token = foundry.canvas?.placeables?.Token ?? Token;
+
 /**
  * The constraint for a polygon given a space.
  * @extends {PIXI.Polygon}
@@ -57,7 +60,7 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
 
         const object = polygon.config.source?.object;
 
-        if (object instanceof foundry.canvas.placeables.Token) {
+        if (object instanceof Token) {
             const center = object.document.getCenterPoint();
 
             if (Math.abs(this.#origin.x - Math.round(center.x)) <= 1 && Math.abs(this.#origin.y - Math.round(center.y)) <= 1) {
