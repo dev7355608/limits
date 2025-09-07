@@ -61,7 +61,13 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
         const object = polygon.config.source?.object;
 
         if (object instanceof Token) {
-            const center = object.document.getCenterPoint();
+            let center;
+
+            if (game.release.generation >= 13) {
+                center = object.document.getCenterPoint();
+            } else {
+                center = object.getCenterPoint();
+            }
 
             if (Math.abs(this.#origin.x - Math.round(center.x)) <= 1 && Math.abs(this.#origin.y - Math.round(center.y)) <= 1) {
                 if (game.release.generation >= 13) {
