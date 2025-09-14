@@ -2,7 +2,7 @@ import * as raycast from "../../raycast/_module.mjs";
 import computeQuadrantBounds from "./quadrants.mjs";
 
 /** @type {typeof foundry.canvas.placeables.Token} */
-const Token = foundry.canvas?.placeables?.Token ?? Token;
+const Token = foundry.canvas?.placeables?.Token ?? globalThis.Token;
 
 /**
  * The constraint for a polygon given a space.
