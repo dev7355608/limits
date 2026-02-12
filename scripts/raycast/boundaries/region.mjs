@@ -35,7 +35,7 @@ export default class Region extends Boundary {
     }
 
     /**
-     * @param {Shape[]} shapes - The shapes (nonempty).
+     * @param {Shape[]} shapes - The shapes.
      * @param {number} bottom - The bottom (minimum z-coordinate).
      * @param {number} top - The top (maximum z-coordinate).
      * @param {int32} mask - The bit mask (nonzero 32-bit integer).
@@ -117,10 +117,8 @@ export default class Region extends Boundary {
 
         const { bottom, top } = this;
 
-        if (CROPPED_SHAPES.length === 0) {
-            if (bottom <= minZ && maxZ <= top) {
-                croppedState ^= 1 << 31;
-            }
+        if (CROPPED_SHAPES.length === 0 && (bottom <= minZ && maxZ <= top)) {
+            croppedState ^= 1 << 31;
 
             return croppedState === 0 ? Universe.get(this.mask) : Universe.EMPTY;
         }
