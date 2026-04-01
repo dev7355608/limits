@@ -37,9 +37,19 @@ export default class LimitRangeRegionBehaviorType extends foundry.data.regionBeh
      * @override
      */
     static events = {
-        [CONST.REGION_EVENTS.BEHAVIOR_STATUS]: onBehaviorStatus,
         [CONST.REGION_EVENTS.REGION_BOUNDARY]: onRegionBoundary,
     };
+
+    static {
+        Hooks.once("init", () => {
+            if (game.release.generation >= 13) {
+                this.events[CONST.REGION_EVENTS.BEHAVIOR_VIEWED] = onBehaviorViewed;
+                this.events[CONST.REGION_EVENTS.BEHAVIOR_UNVIEWED] = onBehaviorUnviewed;
+            } else {
+                this.events[CONST.REGION_EVENTS.BEHAVIOR_STATUS] = onBehaviorStatus;
+            }
+        });
+    }
 
     /**
      * @param {object} changed
@@ -66,6 +76,22 @@ function onBehaviorStatus(event) {
     } else if (event.data.viewed === false) {
         Limits._onBehaviorUnviewed(this.parent);
     }
+}
+
+/**
+ * @this LimitRangeRegionBehaviorType
+ * @param {foundry.types.RegionEvent} event - The Region event.
+ */
+function onBehaviorViewed(event) {
+    Limits._onBehaviorViewed(this.parent);
+}
+
+/**
+ * @this LimitRangeRegionBehaviorType
+ * @param {foundry.types.RegionEvent} event - The Region event.
+ */
+function onBehaviorUnviewed(event) {
+    Limits._onBehaviorUnviewed(this.parent);
 }
 
 /**
