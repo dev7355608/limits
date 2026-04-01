@@ -24,6 +24,8 @@ export default class Cast {
      * @ignore
      */
     constructor(numHits) {
+        console.assert(numHits >= 2);
+
         const hits = this._hits;
 
         for (let j = 0; j < numHits; j++) {

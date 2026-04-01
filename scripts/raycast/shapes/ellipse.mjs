@@ -12,22 +12,22 @@ import { max, min } from "../math.mjs";
 export default class Ellipse extends Shape {
     /**
      * @param {object} args
-     * @param {number} args.centerX - The x-coordinate of the center.
-     * @param {number} args.centerY - The y-coordinate of the center.
+     * @param {number} args.x - The x-coordinate of the center.
+     * @param {number} args.y - The y-coordinate of the center.
      * @param {number} args.radiusX - The x-radius (finite, positive).
      * @param {number} args.radiusY - The y-radius (finite, positive).
      * @param {number} [args.rotation=0.0] - The rotation in radians.
      * @param {int31} [args.mask=0x7FFFFFFF] - The mask (nonzero 31-bit integer).
      * @returns {Ellipse} The ellipse.
      */
-    static create({ centerX, centerY, radiusX, radiusY, rotation = 0.0, mask = 0x7FFFFFFF }) {
-        console.assert(typeof centerX === "number");
-        console.assert(typeof centerY === "number");
+    static create({ x, y, radiusX, radiusY, rotation = 0.0, mask = 0x7FFFFFFF }) {
+        console.assert(typeof x === "number");
+        console.assert(typeof y === "number");
         console.assert(typeof radiusX === "number");
         console.assert(typeof radiusY === "number");
         console.assert(typeof rotation === "number");
-        console.assert(Number.isFinite(centerX));
-        console.assert(Number.isFinite(centerY));
+        console.assert(Number.isFinite(x));
+        console.assert(Number.isFinite(y));
         console.assert(Number.isFinite(radiusX));
         console.assert(Number.isFinite(radiusY));
         console.assert(Number.isFinite(rotation));
@@ -35,20 +35,20 @@ export default class Ellipse extends Shape {
         console.assert(radiusY > 0);
         console.assert(mask === (mask & 0x7FFFFFFF) && mask !== 0);
 
-        return new Ellipse(mask | 0, centerX + 0.0, centerY + 0.0, radiusX + 0.0, radiusY + 0.0, rotation + 0.0);
+        return new Ellipse(mask | 0, x + 0.0, y + 0.0, radiusX + 0.0, radiusY + 0.0, rotation + 0.0);
     }
 
     /**
      * @param {int31} mask - The mask (nonzero 31-bit integer).
-     * @param {number} centerX - The x-coordinate of the center.
-     * @param {number} centerY - The y-coordinate of the center.
+     * @param {number} x - The x-coordinate of the center.
+     * @param {number} y - The y-coordinate of the center.
      * @param {number} radiusX - The x-radius (positive).
      * @param {number} radiusY - The y-radius (positive).
      * @param {number} rotation - The rotation in radians.
      * @private
      * @ignore
      */
-    constructor(mask, centerX, centerY, radiusX, radiusY, rotation) {
+    constructor(mask, x, y, radiusX, radiusY, rotation) {
         super(mask);
 
         const cos = Math.cos(rotation);
@@ -67,7 +67,7 @@ export default class Ellipse extends Shape {
          * @private
          * @ignore
          */
-        this._minX = centerX - deltaX;
+        this._minX = x - deltaX;
 
         /**
          * The minimum y-coordinate.
@@ -76,7 +76,7 @@ export default class Ellipse extends Shape {
          * @private
          * @ignore
          */
-        this._minY = centerY - deltaY;
+        this._minY = y - deltaY;
 
         /**
          * The maximum x-coordinate.
@@ -85,7 +85,7 @@ export default class Ellipse extends Shape {
          * @private
          * @ignore
          */
-        this._maxX = centerX + deltaX;
+        this._maxX = x + deltaX;
 
         /**
          * The maximum y-coordinate.
@@ -94,7 +94,7 @@ export default class Ellipse extends Shape {
          * @private
          * @ignore
          */
-        this._maxY = centerY + deltaY;
+        this._maxY = y + deltaY;
 
         /**
          * The x-scale of the matrix.
@@ -139,7 +139,7 @@ export default class Ellipse extends Shape {
          * @private
          * @ignore
          */
-        this._translationX = -(centerX * scaleX + centerY * skewY);
+        this._translationX = -(x * scaleX + y * skewY);
 
         /**
          * The y-translation of the matrix.
@@ -148,7 +148,7 @@ export default class Ellipse extends Shape {
          * @private
          * @ignore
          */
-        this._translationY = -(centerX * skewX + centerY * scaleY);
+        this._translationY = -(x * skewX + y * scaleY);
     }
 
     /**

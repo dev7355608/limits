@@ -14,7 +14,7 @@ import Universe from "./universe.mjs";
 export default class Region extends Boundary {
     /**
      * @param {object} args
-     * @param {Shape[]} args.shapes - The shapes (nonempty).
+     * @param {Shape[]} args.shapes - The shapes.
      * @param {number} [args.bottom=-Infinity] - The bottom (minimum z-coordinate).
      * @param {number} [args.top=Infinity] - The top (maximum z-coordinate).
      * @param {int32} [args.mask=-1] - The bit mask (nonzero 32-bit).
@@ -24,7 +24,6 @@ export default class Region extends Boundary {
     static create({ shapes, bottom = -Infinity, top = Infinity, mask = -1, state = -1 }) {
         console.assert(Array.isArray(shapes));
         console.assert(shapes.every((shape) => shape instanceof Shape && shape.mask !== 0));
-        console.assert(shapes.length !== 0);
         console.assert(typeof bottom === "number");
         console.assert(typeof top === "number");
         console.assert(bottom <= top);
@@ -70,7 +69,7 @@ export default class Region extends Boundary {
 
     /** @inheritDoc */
     get isUnbounded() {
-        return this.state === 0 && this.shapes.length === 0;
+        return this.state === 0 && this.shapes.length === 0 && this.bottom === -Infinity && this.top === Infinity;
     }
 
     /**
@@ -115,9 +114,17 @@ export default class Region extends Boundary {
             return this;
         }
 
-        const { bottom, top } = this;
+        let { bottom, top } = this;
 
-        if (CROPPED_SHAPES.length === 0 && (bottom <= minZ && maxZ <= top)) {
+        if (bottom <= minZ) {
+            bottom = -Infinity;
+        }
+
+        if (top >= maxZ) {
+            top = Infinity;
+        }
+
+        if (CROPPED_SHAPES.length === 0 && bottom === -Infinity && top === Infinity) {
             croppedState ^= 1 << 31;
 
             return croppedState === 0 ? Universe.get(this.mask) : Universe.EMPTY;

@@ -22,8 +22,15 @@ export const PointDarknessSourceMixin = (PointDarknessSource) => class extends P
                 const { x, y, radius } = this.data;
                 const circle = new PIXI.Circle(x, y, radius);
                 const density = PIXI.Circle.approximateVertexDensity(radius);
+                let scalingFactor;
 
-                this.shape = this._visualShape.applyConstraint(circle, { density, scalingFactor: 100 });
+                if (game.release.generation >= 13) {
+                    scalingFactor = CONST.CLIPPER_SCALING_FACTOR;
+                } else {
+                    scalingFactor = 100;
+                }
+
+                this.shape = this._visualShape.applyConstraint(circle, { density, scalingFactor });
             }
         } else {
             PointSourcePolygonConstraint.apply(this.shape, Limits.darkness);

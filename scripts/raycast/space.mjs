@@ -211,12 +211,12 @@ function initializeVolumes(volumes, minX, minY, minZ, maxX, maxY, maxZ) {
 
                 break;
             }
+        }
 
-            if (!cropped) {
-                CROPPED_VOLUMES.length = 0;
+        if (!cropped) {
+            CROPPED_VOLUMES.length = 0;
 
-                return volumes;
-            }
+            return volumes;
         }
     }
 

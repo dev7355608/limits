@@ -12,63 +12,71 @@ import { max, min } from "../math.mjs";
 export default class Rectangle extends Shape {
     /**
      * @param {object} args
-     * @param {number} args.centerX - The x-coordinate of the center.
-     * @param {number} args.centerY - The y-coordinate of the center.
+     * @param {number} args.x - The x-coordinate of the origin.
+     * @param {number} args.y - The y-coordinate of the origin.
      * @param {number} args.width - The width (finite, positive).
      * @param {number} args.height - The height (finite, positive).
+     * @param {number} [args.anchorX=0.0] - The x-coordinate of the anchor.
+     * @param {number} [args.anchorY=0.0] - The x-coordinate of the anchor.
      * @param {number} [args.rotation=0.0] - The rotation in radians.
      * @param {int31} [args.mask=0x7FFFFFFF] - The mask (nonzero 31-bit integer).
      * @returns {Rectangle} The rectangle.
      */
-    static create({ centerX, centerY, width, height, rotation = 0.0, mask = 0x7FFFFFFF }) {
-        console.assert(typeof centerX === "number");
-        console.assert(typeof centerY === "number");
+    static create({ x, y, width, height, anchorX = 0.0, anchorY = 0.0, rotation = 0.0, mask = 0x7FFFFFFF }) {
+        console.assert(typeof x === "number");
+        console.assert(typeof y === "number");
         console.assert(typeof width === "number");
         console.assert(typeof height === "number");
+        console.assert(typeof anchorX === "number");
+        console.assert(typeof anchorY === "number");
         console.assert(typeof rotation === "number");
-        console.assert(Number.isFinite(centerX));
-        console.assert(Number.isFinite(centerY));
+        console.assert(Number.isFinite(x));
+        console.assert(Number.isFinite(y));
         console.assert(Number.isFinite(width));
         console.assert(Number.isFinite(height));
+        console.assert(Number.isFinite(anchorX));
+        console.assert(Number.isFinite(anchorY));
         console.assert(Number.isFinite(rotation));
         console.assert(width > 0);
         console.assert(height > 0);
         console.assert(mask === (mask & 0x7FFFFFFF) && mask !== 0);
 
-        return new Rectangle(mask | 0, centerX + 0.0, centerY + 0.0, width + 0.0, height + 0.0, rotation + 0.0);
+        return new Rectangle(mask | 0, x + 0.0, y + 0.0, width + 0.0, height + 0.0, anchorX + 0.0, anchorY + 0.0, rotation + 0.0);
     }
 
     /**
      * @param {int31} mask - The mask (nonzero 31-bit integer).
-     * @param {number} centerX - The x-coordinate of the center.
-     * @param {number} centerY - The y-coordinate of the center.
+     * @param {number} x - The x-coordinate of the origin.
+     * @param {number} y - The y-coordinate of the origin.
      * @param {number} width - The width (finite, positive).
      * @param {number} height - The height (finite, positive).
+     * @param {number} anchorX - The x-coordinate of the anchor.
+     * @param {number} anchorY - The y-coordinate of the anchor.
      * @param {number} rotation - The rotation in radians.
      * @private
      * @ignore
      */
-    constructor(mask, centerX, centerY, width, height, rotation) {
+    constructor(mask, x, y, width, height, anchorX, anchorY, rotation) {
         super(mask);
 
         const cos = Math.cos(rotation);
         const sin = Math.sin(rotation);
-        const l = -width * 0.5;
-        const r = -l;
-        const t = -height * 0.5;
-        const b = -t;
+        const l = -width * anchorX;
+        const r = width - l;
+        const t = -height * anchorY;
+        const b = height - t;
         const x0 = cos * l - sin * t;
         const x1 = cos * r - sin * t;
         const x2 = cos * r - sin * b;
         const x3 = cos * l - sin * b;
-        const minX = Math.min(x0, x1, x2, x3) + centerX;
-        const maxX = Math.max(x0, x1, x2, x3) + centerX;
+        const minX = Math.min(x0, x1, x2, x3) + x;
+        const maxX = Math.max(x0, x1, x2, x3) + x;
         const y0 = sin * l + cos * t;
         const y1 = sin * r + cos * t;
         const y2 = sin * r + cos * b;
         const y3 = sin * l + cos * b;
-        const minY = Math.min(y0, y1, y2, y3) + centerY;
-        const maxY = Math.max(y0, y1, y2, y3) + centerY;
+        const minY = Math.min(y0, y1, y2, y3) + y;
+        const maxY = Math.max(y0, y1, y2, y3) + y;
         const scaleX = cos / width;
         const skewX = -sin / height;
         const skewY = sin / width;
@@ -153,7 +161,7 @@ export default class Rectangle extends Shape {
          * @private
          * @ignore
          */
-        this._translationX = 0.5 - (centerX * scaleX + centerY * skewY);
+        this._translationX = anchorX - (x * scaleX + y * skewY);
 
         /**
          * The y-translation of the matrix.
@@ -162,7 +170,7 @@ export default class Rectangle extends Shape {
          * @private
          * @ignore
          */
-        this._translationY = 0.5 - (centerX * skewX + centerY * scaleY);
+        this._translationY = anchorY - (x * skewX + y * scaleY);
     }
 
     /**

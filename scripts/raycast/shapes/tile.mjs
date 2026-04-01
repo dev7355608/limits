@@ -12,10 +12,12 @@ import { max, min } from "../math.mjs";
 export default class Tile extends Shape {
     /**
      * @param {object} args
-     * @param {number} args.centerX - The x-coordinate of the center.
-     * @param {number} args.centerY - The y-coordinate of the center.
+     * @param {number} args.x - The x-coordinate of the origin.
+     * @param {number} args.y - The y-coordinate of the origin.
      * @param {number} args.width - The width (finite, positive).
      * @param {number} args.height - The height (finite, positive).
+     * @param {number} [args.anchorX=0.0] - The x-coordinate of the anchor.
+     * @param {number} [args.anchorY=0.0] - The x-coordinate of the anchor.
      * @param {number} [args.rotation=0.0] - The rotation in radians.
      * @param {{
      *     data: (number | boolean)[],
@@ -32,16 +34,18 @@ export default class Tile extends Shape {
      * @param {int31} [args.mask=0x7FFFFFFF] - The mask (nonzero 31-bit integer).
      * @returns {Tile} The tile.
      */
-    static create({ centerX, centerY, width, height, rotation = 0.0, texture, mask = 0x7FFFFFFF }) {
-        console.assert(typeof centerX === "number");
-        console.assert(typeof centerY === "number");
+    static create({ x, y, width, height, anchorX = 0.0, anchorY = 0.0, rotation = 0.0, texture, mask = 0x7FFFFFFF }) {
+        console.assert(typeof x === "number");
+        console.assert(typeof y === "number");
         console.assert(typeof width === "number");
         console.assert(typeof height === "number");
         console.assert(typeof rotation === "number");
-        console.assert(Number.isFinite(centerX));
-        console.assert(Number.isFinite(centerY));
+        console.assert(Number.isFinite(x));
+        console.assert(Number.isFinite(y));
         console.assert(Number.isFinite(width));
         console.assert(Number.isFinite(height));
+        console.assert(Number.isFinite(anchorX));
+        console.assert(Number.isFinite(anchorY));
         console.assert(Number.isFinite(rotation));
         console.assert(width > 0);
         console.assert(height > 0);
@@ -59,15 +63,17 @@ export default class Tile extends Shape {
         console.assert(texture.threshold === undefined || typeof texture.threshold === "number");
         console.assert(mask === (mask & 0x7FFFFFFF) && mask !== 0);
 
-        return new Tile(mask | 0, centerX + 0.0, centerY + 0.0, width + 0.0, height + 0.0, rotation + 0.0, texture);
+        return new Tile(mask | 0, x + 0.0, y + 0.0, width + 0.0, height + 0.0, anchorX + 0.0, anchorY + 0.0, rotation + 0.0, texture);
     }
 
     /**
      * @param {int31} mask - The mask (nonzero 31-bit integer).
-     * @param {number} centerX - The x-coordinate of the center.
-     * @param {number} centerY - The y-coordinate of the center.
+     * @param {number} x - The x-coordinate of the origin.
+     * @param {number} y - The y-coordinate of the origin.
      * @param {number} width - The width (finite, positive).
      * @param {number} height - The height (finite, positive).
+     * @param {number} anchorX - The x-coordinate of the anchor.
+     * @param {number} anchorY - The y-coordinate of the anchor.
      * @param {number} rotation - The rotation in radians.
      * @param {{
      *     data: (number | boolean)[],
@@ -84,7 +90,7 @@ export default class Tile extends Shape {
      * @private
      * @ignore
      */
-    constructor(mask, centerX, centerY, width, height, rotation, texture) {
+    constructor(mask, x, y, width, height, anchorX, anchorY, rotation, texture) {
         super(mask);
 
         const textureWidth = texture.width;
@@ -97,30 +103,30 @@ export default class Tile extends Shape {
         const textureScaleY = textureHeight / height;
         const cos = Math.cos(rotation);
         const sin = Math.sin(rotation);
-        const halfWidth = width * 0.5;
-        const halfHeight = height * 0.5;
-        const l = textureMinX / textureScaleX - halfWidth;
-        const r = textureMaxX / textureScaleX - halfWidth;
-        const t = textureMinY / textureScaleY - halfHeight;
-        const b = textureMaxY / textureScaleY - halfHeight;
+        const shiftX = width * anchorX;
+        const shiftY = height * anchorY;
+        const l = textureMinX / textureScaleX - shiftX;
+        const r = textureMaxX / textureScaleX - shiftX;
+        const t = textureMinY / textureScaleY - shiftY;
+        const b = textureMaxY / textureScaleY - shiftY;
         const x0 = cos * l - sin * t;
         const x1 = cos * r - sin * t;
         const x2 = cos * r - sin * b;
         const x3 = cos * l - sin * b;
-        const minX = Math.min(x0, x1, x2, x3) + centerX;
-        const maxX = Math.max(x0, x1, x2, x3) + centerX;
+        const minX = Math.min(x0, x1, x2, x3) + x;
+        const maxX = Math.max(x0, x1, x2, x3) + x;
         const y0 = sin * l + cos * t;
         const y1 = sin * r + cos * t;
         const y2 = sin * r + cos * b;
         const y3 = sin * l + cos * b;
-        const minY = Math.min(y0, y1, y2, y3) + centerY;
-        const maxY = Math.max(y0, y1, y2, y3) + centerY;
+        const minY = Math.min(y0, y1, y2, y3) + y;
+        const maxY = Math.max(y0, y1, y2, y3) + y;
         let scaleX = cos;
         let skewX = -sin;
         let skewY = sin;
         let scaleY = cos;
-        let translationX = halfWidth - (centerX * scaleX + centerY * skewY);
-        let translationY = halfHeight - (centerX * skewX + centerY * scaleY);
+        let translationX = shiftX - (x * scaleX + y * skewY);
+        let translationY = shiftY - (x * skewX + y * scaleY);
 
         scaleX *= textureScaleX;
         skewX *= textureScaleY;
@@ -464,9 +470,10 @@ function edt1d(grid, offset, stride, length, f, v, z) {
     z[0] = -EDT_INF;
     z[1] = EDT_INF;
 
-    for (let q = 1, k = 0, s = 0; q < length; q++) {
+    for (let q = 1, k = 0; q < length; q++) {
         f[q] = grid[offset + q * stride];
 
+        let s;
         const q2 = q * q;
 
         do {

@@ -25,7 +25,15 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
         const constraint = new this(polygon, space);
 
         if (!constraint.isEnveloping) {
-            const intersection = constraint.intersectPolygon(polygon, { scalingFactor: 100 });
+            let scalingFactor;
+
+            if (game.release.generation >= 13) {
+                scalingFactor = CONST.CLIPPER_SCALING_FACTOR;
+            } else {
+                scalingFactor = 100;
+            }
+
+            const intersection = constraint.intersectPolygon(polygon, { scalingFactor });
 
             if (clone) {
                 const origin = polygon.origin;
@@ -82,8 +90,15 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
         }
 
         const originZ = elevation * canvas.dimensions.distancePixels;
-        const externalRadius = this.#externalRadius = polygon.config.externalRadius;
-        const { left: minX, right: maxX, top: minY, bottom: maxY } = this.#sourceBounds = polygon.bounds;
+        const externalRadius = this.#externalRadius = polygon.config.externalRadius ?? 0.0;
+
+        this.#sourceBounds = polygon.bounds.clone();
+
+        if (polygon.config.boundingBox) {
+            this.#sourceBounds.fit(polygon.config.boundingBox);
+        }
+
+        const { left: minX, right: maxX, top: minY, bottom: maxY } = this.#sourceBounds;
         const { minDistance, maxDistance } = this.#space0 = space.crop(minX, minY, originZ, maxX, maxY, originZ);
 
         if (minDistance === maxDistance) {
@@ -96,7 +111,7 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
                 this.#addCircleSegment(maxRadius, Math.PI * 1.5);
             }
         } else {
-            this.#quadrantBounds = computeQuadrantBounds(originX, originY, polygon.points);
+            this.#quadrantBounds = computeQuadrantBounds(originX, originY, polygon.points, minX, minY, maxX, maxY);
 
             const ray = raycast.Ray.create()
                 .setOrigin(originX, originY, originZ)

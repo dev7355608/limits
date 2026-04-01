@@ -2,9 +2,13 @@
  * @param {number} originX - The x-coordinate of the origin.
  * @param {number} originY - The y-coordinate of the origin.
  * @param {number[]} points - The points of the polygon (`[x0, y0, x1, y1, x2, y2, ...]`).
+ * @param {number} minX - The minimum x-coordinate.
+ * @param {number} minY - The minimum y-coordinate.
+ * @param {number} maxX - The maximum x-coordinate.
+ * @param {number} maxY - The maximum y-coordinate.
  * @returns {[x0: number, y0: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number]}
  */
-export default function computeQuadrantBounds(originX, originY, points) {
+export default function computeQuadrantBounds(originX, originY, points, minX, minY, maxX, maxY) {
     let q0x = originX;
     let q1x = originX;
     let q2x = originX;
@@ -178,6 +182,15 @@ export default function computeQuadrantBounds(originX, originY, points) {
             }
         }
     }
+
+    q0x = min(q0x, maxX);
+    q0y = min(q0y, maxY);
+    q1x = max(q1x, minX);
+    q1y = min(q1y, maxY);
+    q2x = max(q2x, minX);
+    q2y = max(q2y, minY);
+    q3x = min(q3x, maxX);
+    q3y = max(q3y, minY);
 
     return [q0x, q0y, q1x, q1y, q2x, q2y, q3x, q3y];
 }

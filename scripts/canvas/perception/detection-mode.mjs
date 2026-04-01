@@ -22,7 +22,7 @@ export const DetectionModeMixin = (DetectionMode) => class extends DetectionMode
             point.elevation = test.elevation;
         }
 
-        return visionSource._testLimit(mode, point);
+        return visionSource._testLimit(this.id, mode.range, point);
     }
 };
 

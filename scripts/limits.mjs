@@ -94,10 +94,12 @@ export default class Limits {
                             });
                         } else {
                             shape = raycast.shapes.Rectangle.create({
-                                centerX: data.x + data.width / 2,
-                                centerY: data.y + data.height / 2,
-                                width: data.width / 2,
-                                height: data.height / 2,
+                                x: data.x + data.width / 2,
+                                y: data.y + data.height / 2,
+                                width: data.width,
+                                height: data.height,
+                                anchorX: 0.5,
+                                anchorY: 0.5,
                                 rotation: Math.toRadians(data.rotation),
                             });
                         }
@@ -105,8 +107,8 @@ export default class Limits {
                         break;
                     case "circle":
                         shape = raycast.shapes.Circle.create({
-                            centerX: data.x,
-                            centerY: data.y,
+                            x: data.x,
+                            y: data.y,
                             radius: data.radius,
                         });
 
@@ -114,14 +116,14 @@ export default class Limits {
                     case "ellipse":
                         if (data.radiusX === data.radiusY) {
                             shape = raycast.shapes.Circle.create({
-                                centerX: data.x,
-                                centerY: data.y,
+                                x: data.x,
+                                y: data.y,
                                 radius: data.radiusX,
                             });
                         } else {
                             shape = raycast.shapes.Ellipse.create({
-                                centerX: data.x,
-                                centerY: data.y,
+                                x: data.x,
+                                y: data.y,
                                 radiusX: data.radiusX,
                                 radiusY: data.radiusY,
                                 rotation: Math.toRadians(data.rotation),

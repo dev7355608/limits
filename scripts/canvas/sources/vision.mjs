@@ -12,7 +12,7 @@ export const PointVisionSourceMixin = (PointVisionSource) => class extends Point
      * @type {{ [mode: string]: PointSourceRayCaster }}}
      * @readonly
      */
-    #casters = ((ray) => Object.fromEntries(Object.keys(Limits.sight).map((mode) => [mode, new PointSourceRayCaster(ray)])))(raycast.Ray.create());
+    #casters = ((ray) => Object.fromEntries(["", ...Object.keys(Limits.sight)].map((mode) => [mode, new PointSourceRayCaster(ray)])))(raycast.Ray.create());
 
     /** @override */
     _createShapes() {
@@ -33,13 +33,14 @@ export const PointVisionSourceMixin = (PointVisionSource) => class extends Point
 
     /**
      * Test whether the ray hits the target.
-     * @param {foundry.documents.TokenDetectionMode} - The detection mode data.
+     * @param {string} id - The ID of the detection mode.
+     * @param {number} range - The range of the detection mode.
      * @param {foundry.types.ElevatedPoint} point - The target point.
      * @returns {boolean} Does the ray hit the target?
      * @internal
      */
-    _testLimit(mode, point) {
-        return this.#getCaster(mode).castRay(point.x, point.y, point.elevation * canvas.dimensions.distancePixels).targetHit;
+    _testLimit(id, range, point) {
+        return this.#getCaster(id, range).castRay(point.x, point.y, point.elevation * canvas.dimensions.distancePixels).targetHit;
     }
 
     /**
@@ -50,20 +51,20 @@ export const PointVisionSourceMixin = (PointVisionSource) => class extends Point
     /**
      * Get the ray caster for the given detection mode.
      * @overload
-     * @param {foundry.documents.TokenDetectionMode} - The detection mode data.
+     * @param {string} id - The ID of the detection mode.
+     * @param {number} range - The range of the detection mode.
      * @returns {PointSourceRayCaster} The ray caster.
      */
-    #getCaster(mode) {
-        const id = mode ? mode.id : "";
-        const caster = this.#casters[id];
+    #getCaster(id, range) {
+        const caster = this.#casters[id ?? ""];
 
         if (!caster.initialized) {
             const { x, y, elevation, externalRadius } = this.data;
             const z = elevation * canvas.dimensions.distancePixels;
-            const radius = mode ? this.object.getLightRadius(mode.range ?? /* V12 */ Infinity) : this.data.radius;
+            const radius = id ? this.object.getLightRadius(range ?? /* V12 */ Infinity) : this.data.radius;
             let bounds;
 
-            if (!mode) {
+            if (!id) {
                 bounds = this.shape.bounds;
             } else if (id === "lightPerception") {
                 bounds = this.los.bounds;
@@ -89,7 +90,7 @@ export const PointVisionSourceMixin = (PointVisionSource) => class extends Point
                 maxZ = Infinity;
             }
 
-            const space = Limits.sight[id].crop(minX, minY, minZ, maxX, maxY, maxZ);
+            const space = Limits.sight[id ?? this.data.detectionMode ?? "basicSight"].crop(minX, minY, minZ, maxX, maxY, maxZ);
 
             caster.initialize(space, x, y, z, externalRadius, Infinity);
         }
