@@ -68,6 +68,8 @@ export const PointVisionSourceMixin = (PointVisionSource) => class extends Point
                 bounds = this.shape.bounds;
             } else if (id === "lightPerception") {
                 bounds = this.los.bounds;
+            } else if (game.release.generation >= 13) {
+                bounds = this.los.useInnerBounds ? canvas.dimensions.sceneRect : canvas.dimensions.rect;
             } else {
                 bounds = this.los.config.useInnerBounds ? canvas.dimensions.sceneRect : canvas.dimensions.rect;
             }
