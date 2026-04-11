@@ -24,6 +24,7 @@ export default [
             globals: {
                 ...globals.browser,
                 canvas: "readonly",
+                ClipperLib: "readonly",
                 CONFIG: "readonly",
                 CONST: "readonly",
                 foundry: "readonly",

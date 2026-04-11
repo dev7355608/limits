@@ -1,6 +1,7 @@
-/**
- * @enum {number & {}}
- */
+/** @type {"limits.limitRange"} */
+export const TYPE = "limits.limitRange";
+
+/** @enum {number & {}} */
 export const MODES = Object.freeze({
     /**
     * Stack.

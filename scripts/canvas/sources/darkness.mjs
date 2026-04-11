@@ -1,4 +1,4 @@
-import Limits from "../../limits.mjs";
+import { getSpace } from "../../limits/_module.mjs";
 import PointSourcePolygonConstraint from "../geometry/constraint.mjs";
 import PointSourceRayCaster from "./caster.mjs";
 
@@ -17,38 +17,39 @@ export const PointDarknessSourceMixin = (PointDarknessSource) => class extends P
     _createShapes() {
         super._createShapes();
 
+        const scene = this.level.parent;
+        let space = getSpace(scene, this.level.id, "darkness");
+
         if (this._visualShape) {
-            if (PointSourcePolygonConstraint.apply(this._visualShape, Limits.darkness)) {
+            if (PointSourcePolygonConstraint.apply(this._visualShape, space)) {
                 const { x, y, radius } = this.data;
                 const circle = new PIXI.Circle(x, y, radius);
                 const density = PIXI.Circle.approximateVertexDensity(radius);
-                let scalingFactor;
 
-                if (game.release.generation >= 13) {
-                    scalingFactor = CONST.CLIPPER_SCALING_FACTOR;
-                } else {
-                    scalingFactor = 100;
-                }
-
-                this.shape = this._visualShape.applyConstraint(circle, { density, scalingFactor });
+                this.shape = this._visualShape.applyConstraint(circle, { density, scalingFactor: CONST.CLIPPER_SCALING_FACTOR });
             }
         } else {
-            PointSourcePolygonConstraint.apply(this.shape, Limits.darkness);
+            PointSourcePolygonConstraint.apply(this.shape, space);
         }
 
-        if (game.release.generation >= 13) {
-            const { x, y, elevation, radius } = this.data;
-            const z = elevation * canvas.dimensions.distancePixels;
-            const { left: minX, right: maxX, top: minY, bottom: maxY } = this.shape.bounds;
-            const space = Limits.darkness.crop(minX, minY, z - radius, maxX, maxY, z + radius);
+        const { x, y, elevation, radius } = this.data;
+        const z = elevation * scene.dimensions.distancePixels;
+        const { left: minX, right: maxX, top: minY, bottom: maxY } = this.shape.bounds;
 
-            this.#caster.initialize(space, x, y, z, 0.0, Infinity);
-        }
+        space = space.crop(minX, minY, z - radius, maxX, maxY, z + radius);
+        this.#caster.initialize(space, x, y, z, 0.0, Infinity);
     }
 
     /** @override */
     testPoint(point) {
-        return super.testPoint(point) && this.#caster.castRay(point.x, point.y, point.elevation * canvas.dimensions.distancePixels).targetHit;
+        if (!super.testPoint(point)) {
+            return false;
+        }
+
+        const scene = this.level.parent;
+        const z = point.elevation * scene.dimensions.distancePixels;
+
+        return this.#caster.castRay(point.x, point.y, z).targetHit;
     }
 };
 

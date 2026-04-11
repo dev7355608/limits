@@ -8,7 +8,7 @@ export default class RangeField extends foundry.data.fields.NumberField {
 
     /** @override */
     toFormGroup(groupConfig = {}, inputConfig) {
-        groupConfig.units ??= "GridUnits";
+        groupConfig.units ??= "MEASUREMENT.GridUnits";
 
         return super.toFormGroup(groupConfig, inputConfig);
     }

@@ -1,47 +1,42 @@
-import LimitRangeRegionBehaviorConfig from "./apps/region-behavior.mjs";
 import { DetectionModeMixin } from "./canvas/perception/detection-mode.mjs";
+import { TYPE } from "./const.mjs";
+import RegionMixin from "./canvas/region.mjs";
 import { PointDarknessSourceMixin, PointLightSourceMixin, PointSoundSourceMixin, PointVisionSourceMixin } from "./canvas/sources/_module.mjs";
-import LimitRangeRegionBehaviorType from "./data/region-behavior.mjs";
-
-const TYPE = "limits.limitRange";
+import RegionDocumentMixin from "./data/region.mjs";
+import LimitRangeRegionBehaviorType from "./data/region-behavior-type.mjs";
+import { applyMixin } from "./utils.mjs";
 
 Hooks.once("init", () => {
     CONFIG.RegionBehavior.dataModels[TYPE] = LimitRangeRegionBehaviorType;
     CONFIG.RegionBehavior.typeIcons[TYPE] = "fa-solid fa-eye-low-vision";
     CONFIG.RegionBehavior.typeLabels[TYPE] = "LIMITS.label";
+    CONFIG.RegionBehavior.typeHints[TYPE] = "LIMITS.hint";
 
-    Hooks.once("setup", () => {
-        Hooks.once("canvasInit", () => {
-            mixinDetectionModes();
-            mixinPointSources();
+    Hooks.once("i18nInit", () => {
+        CONFIG.Region.documentClass = RegionDocumentMixin(CONFIG.Region.documentClass);
+
+        Hooks.once("setup", () => {
+            CONFIG.Region.objectClass = RegionMixin(CONFIG.Region.objectClass);
+
+            Hooks.on("canvasInit", () => {
+                mixinDetectionModes();
+                mixinPointSources();
+            });
         });
     });
-
-    if (game.release.generation < 13) {
-        Hooks.once("ready", () => {
-            CONFIG.RegionBehavior.sheetClasses[TYPE]["core.RegionBehaviorConfig"].cls = LimitRangeRegionBehaviorConfig;
-        });
-    }
 });
 
 function mixinDetectionModes() {
-    const cache = new Map();
-
     for (const mode of Object.values(CONFIG.Canvas.detectionModes)) {
-        let prototype = cache.get(mode.constructor);
+        const modeClass = applyMixin(mode.constructor, DetectionModeMixin);
 
-        if (!prototype) {
-            prototype = DetectionModeMixin(mode.constructor).prototype;
-            cache.set(mode.constructor, prototype);
-        }
-
-        Object.setPrototypeOf(mode, prototype);
+        Object.setPrototypeOf(mode, modeClass.prototype);
     }
 }
 
 function mixinPointSources() {
-    CONFIG.Canvas.visionSourceClass = PointVisionSourceMixin(CONFIG.Canvas.visionSourceClass);
-    CONFIG.Canvas.lightSourceClass = PointLightSourceMixin(CONFIG.Canvas.lightSourceClass);
-    CONFIG.Canvas.darknessSourceClass = PointDarknessSourceMixin(CONFIG.Canvas.darknessSourceClass);
-    CONFIG.Canvas.soundSourceClass = PointSoundSourceMixin(CONFIG.Canvas.soundSourceClass);
+    CONFIG.Canvas.visionSourceClass = applyMixin(CONFIG.Canvas.visionSourceClass, PointVisionSourceMixin);
+    CONFIG.Canvas.lightSourceClass = applyMixin(CONFIG.Canvas.lightSourceClass, PointLightSourceMixin);
+    CONFIG.Canvas.darknessSourceClass = applyMixin(CONFIG.Canvas.darknessSourceClass, PointDarknessSourceMixin);
+    CONFIG.Canvas.soundSourceClass = applyMixin(CONFIG.Canvas.soundSourceClass, PointSoundSourceMixin);
 }

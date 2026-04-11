@@ -7,8 +7,8 @@ export default class SightField extends foundry.data.fields.SetField {
     }
 
     /** @override */
-    _cleanType(value, options) {
-        value = super._cleanType(value, options);
+    _cleanType(value, options, state) {
+        value = super._cleanType(value, options, state);
         value.sort();
 
         const n = value.length;

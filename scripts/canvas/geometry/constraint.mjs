@@ -25,27 +25,34 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
         const constraint = new this(polygon, space);
 
         if (!constraint.isEnveloping) {
-            let scalingFactor;
-
-            if (game.release.generation >= 13) {
-                scalingFactor = CONST.CLIPPER_SCALING_FACTOR;
-            } else {
-                scalingFactor = 100;
-            }
-
+            const scalingFactor = CONST.CLIPPER_SCALING_FACTOR;
             const intersection = constraint.intersectPolygon(polygon, { scalingFactor });
 
             if (clone) {
                 const origin = polygon.origin;
                 const config = { ...polygon.config, boundaryShapes: [...polygon.config.boundaryShapes] };
+                const surfaceExposure = polygon.surfaceExposure;
 
                 polygon = new polygon.constructor();
                 polygon.origin = origin;
                 polygon.config = config;
+                polygon.surfaceExposure = surfaceExposure;
             }
 
             polygon.points = intersection.points;
             polygon.bounds = polygon.getBounds();
+
+            if (polygon.surfaceExposure) {
+                const clipper = new ClipperLib.Clipper();
+                const solution = new ClipperLib.PolyTree();
+
+                clipper.AddPaths(polygon.surfaceExposure.clipperPaths, ClipperLib.PolyType.ptSubject, true);
+                clipper.AddPath(constraint.toClipperPoints({ scalingFactor }), ClipperLib.PolyType.ptClip, true);
+                clipper.Execute(ClipperLib.ClipType.ctIntersection, solution, ClipperLib.PolyFillType.pftPositive,
+                    ClipperLib.PolyFillType.pftEvenOdd);
+
+                polygon.surfaceExposure = solution.ChildCount() ? foundry.data.PolygonTree.fromClipperPolyTree(solution) : null;
+            }
         }
 
         polygon.config.boundaryShapes.push(constraint);
@@ -62,34 +69,11 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
         super();
 
         this.#origin = polygon.origin;
+        this.#level = polygon.config.level;
+        this.#scene = this.#level.parent;
 
-        const object = polygon.config.source?.object;
-
-        if (object instanceof CONFIG.Token.objectClass) {
-            let center;
-
-            if (game.release.generation >= 13) {
-                center = object.document.getCenterPoint();
-            } else {
-                center = object.getCenterPoint();
-            }
-
-            if (Math.abs(this.#origin.x - Math.round(center.x)) <= 1 && Math.abs(this.#origin.y - Math.round(center.y)) <= 1) {
-                if (game.release.generation >= 13) {
-                    center.elevation = this.#origin.elevation;
-                }
-
-                this.#origin = center;
-            }
-        }
-
-        let { x: originX, y: originY, elevation } = this.#origin;
-
-        if (game.release.generation < 13) {
-            elevation = polygon.config.source?.elevation ?? 0.0;
-        }
-
-        const originZ = elevation * canvas.dimensions.distancePixels;
+        const { x: originX, y: originY, elevation } = this.#origin;
+        const originZ = elevation * this.#scene.dimensions.distancePixels;
         const externalRadius = this.#externalRadius = polygon.config.externalRadius ?? 0.0;
 
         this.#sourceBounds = polygon.bounds.clone();
@@ -113,6 +97,19 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
         } else {
             this.#quadrantBounds = computeQuadrantBounds(originX, originY, polygon.points, minX, minY, maxX, maxY);
 
+            if (polygon.surfaceExposure) {
+                const { left: minX, top: minY, right: maxX, bottom: maxY } = polygon.surfaceExposure.bounds;
+
+                this.#quadrantBounds[0] = Math.max(this.#quadrantBounds[0], maxX);
+                this.#quadrantBounds[1] = Math.max(this.#quadrantBounds[1], maxY);
+                this.#quadrantBounds[2] = Math.min(this.#quadrantBounds[2], minX);
+                this.#quadrantBounds[3] = Math.max(this.#quadrantBounds[3], maxY);
+                this.#quadrantBounds[4] = Math.min(this.#quadrantBounds[4], minX);
+                this.#quadrantBounds[5] = Math.min(this.#quadrantBounds[5], minY);
+                this.#quadrantBounds[6] = Math.max(this.#quadrantBounds[6], maxX);
+                this.#quadrantBounds[7] = Math.min(this.#quadrantBounds[7], minY);
+            }
+
             const ray = raycast.Ray.create()
                 .setOrigin(originX, originY, originZ)
                 .setRange(externalRadius, polygon.config.radius);
@@ -135,6 +132,12 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
 
     /** @type {foundry.types.ElevatedPoint} */
     #origin;
+
+    /** @type {foundry.documents.Scene} */
+    #scene;
+
+    /** @type {foundry.documents.Level} */
+    #level;
 
     /** @type {number} */
     #externalRadius;
@@ -315,7 +318,7 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
         const deltaAngle = Math.PI * 0.5;
         const points = this.points;
 
-        if (radius < canvas.dimensions.maxR) {
+        if (radius < this.#scene.dimensions.maxR) {
             const epsilon = 1.0; // PIXI.Circle.approximateVertexDensity
             const numSteps = Math.ceil(deltaAngle / Math.sqrt(2.0 * epsilon / radius) - 1e-3);
             const angleStep = deltaAngle / numSteps;
@@ -353,7 +356,7 @@ export default class PointSourcePolygonConstraint extends PIXI.Polygon {
      */
     #castRays(ray, c0x, c0y, c1x, c1y) {
         const { originX: x, originY: y, originZ: z } = ray;
-        const precision = canvas.dimensions.size * 0.0825;
+        const precision = this.#scene.dimensions.size * 0.0825;
         const precision2 = precision * precision;
         const c0dx = c0x - x;
         const c0dy = c0y - y;

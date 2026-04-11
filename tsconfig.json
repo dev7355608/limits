@@ -13,6 +13,7 @@
         ],
         "module": "esnext",
         "target": "esnext",
+        "rootDir": "scripts",
         "outDir": "_types",
         "noUnusedLocals": false,
         "noUnusedParameters": false

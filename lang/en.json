@@ -1,6 +1,7 @@
 {
     "LIMITS": {
         "label": "Limit Range",
+        "hint": "Limit the range of sight, light, darkness, and sound within the Region.",
         "FIELDS": {
             "sight": {
                 "label": "Sight",

@@ -9,24 +9,8 @@ export const DetectionModeMixin = (DetectionMode) => class extends DetectionMode
             return false;
         }
 
-        let point;
-
-        if (game.release.generation >= 13) {
-            point = test.point;
-        } else {
-            const { x, y } = test.point;
-
-            point = TEMP_POINT;
-            point.x = x;
-            point.y = y;
-            point.elevation = test.elevation;
-        }
-
-        return visionSource._testLimit(this.id, mode.range, point);
+        return visionSource._testLimit(this.id, mode.range, test.point, test.level);
     }
 };
 
 export default DetectionModeMixin;
-
-/** @type {foundry.types.ElevatedPoint} */
-const TEMP_POINT = { x: 0.0, y: 0.0, elevation: 0.0 };

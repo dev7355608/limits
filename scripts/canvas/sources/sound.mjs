@@ -1,4 +1,4 @@
-import Limits from "../../limits.mjs";
+import { getSpace } from "../../limits/_module.mjs";
 import PointSourcePolygonConstraint from "../geometry/constraint.mjs";
 import PointSourceRayCaster from "./caster.mjs";
 
@@ -17,31 +17,31 @@ export const PointSoundSourceMixin = (PointSoundSource) => class extends PointSo
     _createShapes() {
         super._createShapes();
 
-        PointSourcePolygonConstraint.apply(this.shape, Limits.sound);
+        const scene = this.level.parent;
+        let space = getSpace(scene, this.level.id, "sound");
+
+        PointSourcePolygonConstraint.apply(this.shape, space);
 
         const { x, y, elevation, radius } = this.data;
-        const z = elevation * canvas.dimensions.distancePixels;
+        const z = elevation * scene.dimensions.distancePixels;
         const { left: minX, right: maxX, top: minY, bottom: maxY } = this.shape.bounds;
+        const minZ = z - radius;
+        const maxZ = z + radius;
 
-        let minZ;
-        let maxZ;
-
-        if (game.release.generation >= 13) {
-            minZ = z - radius;
-            maxZ = z + radius;
-        } else {
-            minZ = z;
-            maxZ = z;
-        }
-
-        const space = Limits.sound.crop(minX, minY, minZ, maxX, maxY, maxZ);
-
+        space = space.crop(minX, minY, minZ, maxX, maxY, maxZ);
         this.#caster.initialize(space, x, y, z, 0.0, Infinity);
     }
 
     /** @override */
     testPoint(point) {
-        return super.testPoint(point) && this.#caster.castRay(point.x, point.y, point.elevation * canvas.dimensions.distancePixels).targetHit;
+        if (!super.testPoint(point)) {
+            return false;
+        }
+
+        const scene = this.level.parent;
+        const z = point.elevation * scene.dimensions.distancePixels;
+
+        return this.#caster.castRay(point.x, point.y, z).targetHit;
     }
 
     /** @override */
@@ -49,13 +49,8 @@ export const PointSoundSourceMixin = (PointSoundSource) => class extends PointSo
         let volume = super.getVolumeMultiplier(listener, options);
 
         if (volume > 0.0) {
-            let z;
-
-            if (game.release.generation >= 13) {
-                z = listener.elevation * canvas.dimensions.distancePixels;
-            } else {
-                z = this.#caster.ray.originZ;
-            }
+            const scene = this.level.parent;
+            const z = listener.elevation * scene.dimensions.distancePixels;
 
             volume *= this.#caster.castRay(listener.x, listener.y, z).remainingEnergy;
         }
