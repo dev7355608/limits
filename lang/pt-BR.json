@@ -1,6 +1,7 @@
 {
     "LIMITS": {
         "label": "Alcance Limite",
+        "hint": "Limitar o alcance da visão, da luz, da escuridão e do som dentro da Região.",
         "FIELDS": {
             "sight": {
                 "label": "Visão",
